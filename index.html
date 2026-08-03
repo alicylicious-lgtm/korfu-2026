@@ -178,7 +178,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut
+  getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, onSnapshot
@@ -287,10 +287,8 @@ const $ = (id) => document.getElementById(id);
 
 // ---------- Auth flow ----------
 $("google-login-btn").addEventListener("click", () => {
-  signInWithRedirect(auth, provider).catch((e) => showLoginError(e));
+  signInWithPopup(auth, provider).catch((e) => showLoginError(e));
 });
-
-getRedirectResult(auth).catch((e) => showLoginError(e));
 
 function showLoginError(e) {
   console.error("Login-Fehler", e);
@@ -298,6 +296,10 @@ function showLoginError(e) {
   let msg = e.message || String(e);
   if (e.code === "auth/unauthorized-domain") {
     msg = "Diese Domain ist in Firebase noch nicht freigeschaltet (Authentication → Settings → Autorisierte Domains).";
+  } else if (e.code === "auth/popup-blocked") {
+    msg = "Der Login-Popup wurde vom Browser blockiert. Bitte Popups für diese Seite erlauben und nochmal versuchen.";
+  } else if (e.code === "auth/popup-closed-by-user") {
+    msg = "Das Login-Fenster wurde geschlossen, bevor die Anmeldung abgeschlossen war. Bitte nochmal versuchen und den Google-Dialog ganz durchklicken.";
   }
   box.textContent = "Login fehlgeschlagen: " + msg;
   box.style.display = "block";
