@@ -6,6 +6,16 @@
 <title>Corfu 2026</title>
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#16213E" />
+
+<!-- iOS Home-Screen Support -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Corfu 2026" />
+
+<!-- Favicon / general icons -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
   * { box-sizing: border-box; }
@@ -167,7 +177,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+  getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, onSnapshot
@@ -270,7 +280,12 @@ const $ = (id) => document.getElementById(id);
 
 // ---------- Auth flow ----------
 $("google-login-btn").addEventListener("click", () => {
-  signInWithPopup(auth, provider).catch((e) => alert("Login fehlgeschlagen: " + e.message));
+  signInWithRedirect(auth, provider);
+});
+
+getRedirectResult(auth).catch((e) => {
+  console.error("Redirect-Login-Fehler", e);
+  alert("Login fehlgeschlagen: " + e.message);
 });
 
 $("logout-btn").addEventListener("click", () => signOut(auth));
