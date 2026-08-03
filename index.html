@@ -108,6 +108,7 @@
     <h1>Corfu 2026</h1>
     <div class="sub">Sun. Sea. Stories. — Melde dich mit Google an.</div>
     <button class="google-btn" id="google-login-btn">🔵 Mit Google anmelden</button>
+    <div id="login-error" style="display:none; margin-top:14px; background:rgba(200,80,60,0.2); border:1px solid #C8503C; border-radius:8px; padding:10px 14px; font-size:13px;"></div>
     <div id="name-picker" style="margin-top:30px; display:none;">
       <div class="sub" style="margin-bottom:16px;">Angemeldet — wer bist du?</div>
       <div id="fam-list"></div>
@@ -202,6 +203,12 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch((e) => console.error("SW-Registrierung fehlgeschlagen", e));
+  });
+}
+
 const ORGANIZER = "Sarang";
 
 const FAMILIES = [
@@ -280,13 +287,21 @@ const $ = (id) => document.getElementById(id);
 
 // ---------- Auth flow ----------
 $("google-login-btn").addEventListener("click", () => {
-  signInWithRedirect(auth, provider);
+  signInWithRedirect(auth, provider).catch((e) => showLoginError(e));
 });
 
-getRedirectResult(auth).catch((e) => {
-  console.error("Redirect-Login-Fehler", e);
-  alert("Login fehlgeschlagen: " + e.message);
-});
+getRedirectResult(auth).catch((e) => showLoginError(e));
+
+function showLoginError(e) {
+  console.error("Login-Fehler", e);
+  const box = $("login-error");
+  let msg = e.message || String(e);
+  if (e.code === "auth/unauthorized-domain") {
+    msg = "Diese Domain ist in Firebase noch nicht freigeschaltet (Authentication → Settings → Autorisierte Domains).";
+  }
+  box.textContent = "Login fehlgeschlagen: " + msg;
+  box.style.display = "block";
+}
 
 $("logout-btn").addEventListener("click", () => signOut(auth));
 
