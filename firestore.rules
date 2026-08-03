@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Jeder eingeloggte Nutzer darf sein eigenes Namens-Profil lesen/anlegen
+    match /profiles/{uid} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Reiseplan-Status (Haken/Bearbeitungen) und News:
+    // jeder eingeloggte Nutzer darf lesen und schreiben.
+    // (Wer News posten darf, wird bereits im Frontend auf "Sarang" begrenzt;
+    // diese Regel ist die technische Mindestabsicherung nach außen.)
+    match /tripData/{docId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

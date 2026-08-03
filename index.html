@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Corfu 2026</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#16213E" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F6F1E4; color: #16213E; font-family: 'Karla', system-ui, sans-serif; }
+  .disp { font-family: 'Oswald', sans-serif; letter-spacing: 0.02em; }
+  .mono { font-family: 'Space Mono', monospace; }
+  button { font-family: inherit; }
+  a { color: inherit; }
+
+  #loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+  /* ---- Login screen ---- */
+  #login-screen { min-height: 100vh; background: #16213E; color: #F6F1E4; padding: 40px 16px; display: none; }
+  #login-inner { max-width: 560px; margin: 0 auto; }
+  .eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; opacity: 0.8; font-size: 12px; letter-spacing: 0.15em; }
+  #login-inner h1 { font-size: 40px; margin: 6px 0 4px; text-transform: uppercase; }
+  .sub { opacity: 0.75; margin-bottom: 30px; }
+  .google-btn { display: flex; align-items: center; gap: 10px; background: #F6F1E4; color: #16213E; border: none; border-radius: 10px; padding: 12px 20px; font-weight: 700; font-size: 15px; cursor: pointer; }
+  .fam-block { margin-bottom: 22px; }
+  .fam-label { font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .fam-members { display: flex; flex-wrap: wrap; gap: 8px; }
+  .name-btn { background: #F6F1E4; color: #16213E; border-radius: 10px; padding: 10px 16px; font-weight: 700; font-size: 15px; cursor: pointer; border-width: 2px; border-style: solid; }
+
+  /* ---- Main app ---- */
+  #app { display: none; padding-bottom: 60px; }
+  #hero { background: #16213E; color: #F6F1E4; padding: 22px 16px 26px; }
+  #hero-inner { max-width: 760px; margin: 0 auto; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  #hero-inner h1 { font-size: 30px; margin: 4px 0 2px; text-transform: uppercase; }
+  .logout-btn { background: transparent; border: 1px solid rgba(246,241,228,0.4); color: #F6F1E4; border-radius: 8px; padding: 6px 10px; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .progress-row { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; margin-bottom: 5px; }
+  .progress-track { height: 8px; background: rgba(246,241,228,0.15); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #C9862B; transition: width 0.4s; }
+
+  #content { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+  .card { background: #FFFFFF; border: 1px solid #E8E0CC; border-radius: 14px; padding: 16px; }
+  .card-title { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em; }
+  #news-input-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  #news-input-row input { flex: 1; border: 1px solid #E8E0CC; border-radius: 8px; padding: 9px 12px; font-size: 14px; font-family: inherit; }
+  #news-input-row button { background: #16213E; color: #F6F1E4; border: none; border-radius: 8px; padding: 0 14px; cursor: pointer; }
+  .news-item { background: #F6F1E4; border-radius: 8px; padding: 9px 12px; font-size: 14px; margin-bottom: 8px; }
+  .news-ts { font-size: 10px; opacity: 0.5; margin-top: 3px; }
+
+  .side-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  #weather-card { background: #2E8C9C; color: #F6F1E4; border-radius: 14px; padding: 16px; }
+  .weather-nums { display: flex; gap: 16px; }
+  .weather-num .disp { font-size: 26px; }
+  .weather-label { font-size: 11px; opacity: 0.8; }
+
+  h2.section-title { font-size: 22px; margin-top: 32px; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .day-ticket { background: #FFFFFF; border: 1px solid #E8E0CC; border-radius: 16px; margin-bottom: 16px; overflow: hidden; position: relative; }
+  .day-head { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; color: #F6F1E4; }
+  .day-head .disp { font-size: 20px; text-transform: uppercase; }
+  .day-date { font-size: 13px; opacity: 0.85; margin-left: 10px; }
+  .splash-badge { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .perf { border-top: 1px dashed #D9CFAE; }
+
+  .slot-row { padding: 12px 16px; border-bottom: 1px solid #F0EBDA; display: flex; gap: 12px; align-items: flex-start; }
+  .slot-row:last-child { border-bottom: none; }
+  .check-btn { background: none; border: none; padding: 0; margin-top: 2px; cursor: pointer; }
+  .slot-body { flex: 1; min-width: 0; }
+  .slot-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.55; margin-bottom: 2px; }
+  .slot-text { font-size: 14px; }
+  .slot-text.done { text-decoration: line-through; opacity: 0.5; }
+  .edited-by { font-size: 10px; opacity: 0.5; margin-top: 2px; }
+  .edit-btn { background: none; border: none; cursor: pointer; opacity: 0.4; padding: 2px; float: right; }
+  .edit-area textarea { width: 100%; border: 1px solid #E8E0CC; border-radius: 8px; padding: 8px; font-size: 14px; font-family: inherit; resize: vertical; }
+  .edit-actions { display: flex; gap: 6px; margin-top: 6px; }
+  .edit-actions button { border-radius: 6px; padding: 5px 10px; font-size: 12px; cursor: pointer; }
+  .btn-save { background: #16213E; color: #F6F1E4; border: none; }
+  .btn-cancel { background: none; border: 1px solid #E8E0CC; }
+
+  .donts-card { background: #FFF8EC; border: 1px solid #E8D9AE; border-radius: 14px; padding: 16px; margin-top: 24px; }
+  .donts-card .card-title { color: #B5432E; }
+  .donts-card ul { margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px; }
+  .donts-card li { font-size: 13.5px; line-height: 1.4; display: list-item; }
+
+  .footer-note { text-align: center; margin-top: 30px; opacity: 0.5; font-size: 12px; }
+  .row-flex { display: flex; align-items: center; gap: 6px; }
+</style>
+</head>
+<body>
+
+<div id="loading">Lädt …</div>
+
+<div id="login-screen">
+  <div id="login-inner">
+    <div class="eyebrow">✈️ <span>CORFU · GREECE</span></div>
+    <h1>Corfu 2026</h1>
+    <div class="sub">Sun. Sea. Stories. — Melde dich mit Google an.</div>
+    <button class="google-btn" id="google-login-btn">🔵 Mit Google anmelden</button>
+    <div id="name-picker" style="margin-top:30px; display:none;">
+      <div class="sub" style="margin-bottom:16px;">Angemeldet — wer bist du?</div>
+      <div id="fam-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div id="hero">
+    <div id="hero-inner">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">✈️ <span class="mono">4–11 AUG 2026</span></div>
+          <h1 class="disp">Corfu 2026</h1>
+          <div style="opacity:0.75; font-size:13px;">Ekati Mare Lifestyle Resort · Kavos</div>
+        </div>
+        <button class="logout-btn" id="logout-btn">↩ <span id="me-name"></span></button>
+      </div>
+      <div style="margin-top:18px;">
+        <div class="progress-row"><span>Reiseplan-Fortschritt</span><span class="mono" id="progress-text">0/0</span></div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="content">
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">📣 News vom Organisator</div>
+      <div id="news-input-row" style="display:none;">
+        <input id="news-input" placeholder="Ankündigung schreiben…" />
+        <button id="news-send-btn">➤</button>
+      </div>
+      <div id="news-list"></div>
+    </div>
+
+    <div class="side-grid">
+      <div id="weather-card">
+        <div class="row-flex" style="margin-bottom:8px; opacity:0.9; justify-content:space-between;">
+          <span class="row-flex">🌡 <span class="disp" style="font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Wetter · Kavos</span></span>
+          <span class="mono" style="font-size:9px; opacity:0.8;">LIVE</span>
+        </div>
+        <div class="weather-nums">
+          <div class="weather-num"><div class="disp" id="weather-air">–°</div><div class="weather-label">Luft</div></div>
+          <div class="weather-num"><div class="disp" id="weather-sea">–°</div><div class="weather-label">Meer</div></div>
+        </div>
+        <div id="weather-updated" style="font-size:11px; opacity:0.75; margin-top:6px;">lädt …</div>
+      </div>
+      <div class="card">
+        <div class="row-flex" style="margin-bottom:8px;">👥 <span class="disp" style="font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Crew</span></div>
+        <div class="disp" style="font-size:26px;">17</div>
+        <div style="font-size:12px; opacity:0.7;">Reisende, 6 Familien, ein Home Base</div>
+      </div>
+    </div>
+
+    <h2 class="section-title disp">Reiseplan</h2>
+    <div id="days-container"></div>
+
+    <div class="donts-card">
+      <div class="card-title">⚠️ Don'ts — bleiben wir fair</div>
+      <ul id="donts-list"></ul>
+    </div>
+
+    <div class="footer-note mono">CFU · 17 TRAVELLERS · ONE CREW</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ============================================================
+// 1) FIREBASE CONFIG — hier deine eigenen Werte aus der
+//    Firebase Console einfügen (Projekteinstellungen → Web-App)
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyD06A0U0Dqzm285AE68YG8I5KYvx6isMR0",
+  authDomain: "korfu-2026-d1211.firebaseapp.com",
+  projectId: "korfu-2026-d1211",
+  storageBucket: "korfu-2026-d1211.firebasestorage.app",
+  messagingSenderId: "804377200455",
+  appId: "1:804377200455:web:25cbaf34c32dcc3a116e62",
+  measurementId: "G-JR4VWHE4BD",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+const ORGANIZER = "Sarang";
+
+const FAMILIES = [
+  { name: "Familie Rahmanian", color: "#2B5D8C", members: ["Sarang", "Mona", "Mila"] },
+  { name: "Familie Rahmanian", color: "#C9862B", members: ["Saed", "Doris", "Eli", "Noemi"] },
+  { name: "Familie Zarif", color: "#3C7A4E", members: ["Michel", "Puneh", "Matisse", "Olivia"] },
+  { name: "Familie Zarifzadeh", color: "#2E8C9C", members: ["Jonathan", "Amelia"] },
+  { name: "Familie Kernstock", color: "#B5432E", members: ["Bieta", "Alex", "Bruce"] },
+  { name: "Familie Sodeyfi", color: "#7A4E9C", members: ["Alice"] },
+];
+
+const DAYS = [
+  { id: "d1", weekday: "DI", date: "4 AUG", splash: false, slots: {
+      morning: { icon: "✈️", title: "Willkommen in Corfu", items: ["Ankunft", "Hotel Check-in", "Ankommen & entspannen"] },
+      afternoon: { icon: "🌊", title: "Hotelpool / Strand", items: [] },
+      evening: { icon: "🍽", title: "Dinner im Resort", items: [] },
+      night: { icon: "🌙", title: "Board Games", items: [] } } },
+  { id: "d2", weekday: "MI", date: "5 AUG", splash: false, slots: {
+      morning: { icon: "🌊", title: "Hotelpool / Strand", items: [] },
+      afternoon: { icon: "🌊", title: "Issos Beach", items: [] },
+      evening: { icon: "🍽", title: "Contessa Restaurant", items: [] },
+      night: { icon: "🌙", title: "Board Games", items: [] } } },
+  { id: "d3", weekday: "DO", date: "6 AUG", splash: true, slots: {
+      morning: { icon: "🌊", title: "Männer + alle Kinder: Aqualand", items: [] },
+      afternoon: { icon: "☀️", title: "Frauen: Chill & Relax", items: ["Hotelpool / Strand"] },
+      evening: { icon: "🍽", title: "Dinner im Resort", items: ["Cocktails & Relax"] },
+      night: { icon: "🌙", title: "Board Games", items: [] } } },
+  { id: "d4", weekday: "FR", date: "7 AUG", splash: false, slots: {
+      morning: { icon: "✈️", title: "Alex kommt an", items: ["Willkommen in Corfu!"] },
+      afternoon: { icon: "🌊", title: "Issos Beach", items: [] },
+      evening: { icon: "🍽", title: "Dinner im Resort", items: [] },
+      night: { icon: "🌙", title: "Board Games", items: [] } } },
+  { id: "d5", weekday: "SA", date: "8 AUG", splash: false, slots: {
+      morning: { icon: "🌊", title: "Hotelpool / Strand", items: ["bis 15:30 Uhr"] },
+      afternoon: { icon: "🏛", title: "Corfu Town Experience", items: ["Abfahrt 15:30", "Altstadt & Sehenswürdigkeiten", "Shopping", "Freizeit"] },
+      evening: { icon: "🍽", title: "Naok Azur (Dinner)", items: ["Cavalieri Roof Garden (Dessert)"] },
+      night: { icon: "🌙", title: "Board Games", items: [] } } },
+  { id: "d6", weekday: "SO", date: "9 AUG", splash: true, slots: {
+      morning: { icon: "🌊", title: "Männer + ältere Kinder: Aqualand", items: [] },
+      afternoon: { icon: "☀️", title: "Frauen + jüngere Kinder", items: ["Hotelpool / Strand", "Cocktails & Relax"] },
+      evening: { icon: "🍽", title: "Dinner im Resort", items: [] },
+      night: { icon: "🌙", title: "Board Games", items: [] } } },
+  { id: "d7", weekday: "MO", date: "10 AUG", splash: false, slots: {
+      morning: { icon: "🌊", title: "Hotelpool / Strand", items: [] },
+      afternoon: { icon: "🌊", title: "Hotelpool / Strand", items: [] },
+      evening: { icon: "🚢", title: "Captain's Day Boat Tour", items: ["16:30 Uhr – 4 Stunden", "Syvota, Blue Lagoon, Cave Sunset"] },
+      night: { icon: "🌙", title: "Board Games", items: [] } } },
+  { id: "d8", weekday: "DI", date: "11 AUG", splash: false, slots: {
+      morning: { icon: "✈️", title: "Bis zum nächsten Mal", items: ["Check-out & Transfer zum Flughafen"] },
+      night: { icon: "🌙", title: "Board Games", items: [] } } },
+];
+
+const DONTS = [
+  "Alice darf nicht nach einer Woche CEO von ekati werden",
+  "Alex darf nur von maximal einer Speise pro Tag ein Foto machen",
+  "Amelia darf nicht plötzlich das Handy nehmen und alle Leute filmen, nur weil sie viel lachen",
+  "Bieta darf in der Woche kein Wohnungs-Kauf abschließen",
+  "Doris darf nicht jeden Tag 3 Stunden im Zimmer verschwinden",
+  "Jonathan muss mindestens 1x am Tag ins Wasser",
+  "Michel darf nicht komische Romane lesen",
+  "Mona darf nicht komische Sachen anziehen (zB Fischnetz)",
+  "Puneh darf nur Wörter verwenden, die mindestens die Hälfte der Gruppe kennt",
+  "Saed darf nicht sein T-Shirt beim Tanzen ausziehen",
+  "Sarang darf nicht ohne Schwimmflügeli ins Wasser",
+];
+
+const SLOT_LABELS = { morning: "Vormittag", afternoon: "Nachmittag", evening: "Abend", night: "Nacht" };
+const SLOT_ORDER = ["morning", "afternoon", "evening", "night"];
+
+let currentUser = null;   // firebase auth user
+let myName = null;        // linked family name
+let tripState = {};       // { activityId: {done, doneBy, text, editedBy} }
+let newsList = [];
+
+const $ = (id) => document.getElementById(id);
+
+// ---------- Auth flow ----------
+$("google-login-btn").addEventListener("click", () => {
+  signInWithPopup(auth, provider).catch((e) => alert("Login fehlgeschlagen: " + e.message));
+});
+
+$("logout-btn").addEventListener("click", () => signOut(auth));
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  $("loading").style.display = "none";
+  if (!user) {
+    myName = null;
+    $("app").style.display = "none";
+    $("login-screen").style.display = "block";
+    $("name-picker").style.display = "none";
+    return;
+  }
+  const profileRef = doc(db, "profiles", user.uid);
+  const snap = await getDoc(profileRef);
+  if (snap.exists()) {
+    myName = snap.data().name;
+    startApp();
+  } else {
+    renderNamePicker(profileRef);
+  }
+});
+
+function renderNamePicker(profileRef) {
+  $("login-screen").style.display = "block";
+  $("name-picker").style.display = "block";
+  const list = $("fam-list");
+  list.innerHTML = "";
+  FAMILIES.forEach((fam) => {
+    const block = document.createElement("div");
+    block.className = "fam-block";
+    const label = document.createElement("div");
+    label.className = "fam-label";
+    label.style.color = fam.color;
+    label.textContent = fam.name;
+    block.appendChild(label);
+    const membersDiv = document.createElement("div");
+    membersDiv.className = "fam-members";
+    fam.members.forEach((m) => {
+      const btn = document.createElement("button");
+      btn.className = "name-btn";
+      btn.style.borderColor = fam.color;
+      btn.textContent = m + (m === ORGANIZER ? " ★ Organisator" : "");
+      btn.addEventListener("click", async () => {
+        await setDoc(profileRef, { name: m, uid: currentUser.uid });
+        myName = m;
+        startApp();
+      });
+      membersDiv.appendChild(btn);
+    });
+    block.appendChild(membersDiv);
+    list.appendChild(block);
+  });
+}
+
+function startApp() {
+  $("login-screen").style.display = "none";
+  $("app").style.display = "block";
+  $("me-name").textContent = myName;
+  $("news-input-row").style.display = myName === ORGANIZER ? "flex" : "none";
+  renderStaticParts();
+  subscribeState();
+  subscribeNews();
+  loadWeather();
+  setInterval(loadWeather, 30 * 60 * 1000); // alle 30 Min. aktualisieren
+}
+
+// ---------- Live weather (Kavos, Corfu) ----------
+// Hinweis: bergfex hat keine öffentliche API und ist auf alpines/DACH-Wetter
+// ausgelegt, nicht auf griechische Küstenorte. Open-Meteo liefert dieselbe
+// Art Live-Daten (Luft- & Meerestemperatur) kostenlos und ohne API-Key.
+const WX_LAT = 39.38, WX_LON = 20.09; // Kavos, Corfu
+
+async function loadWeather() {
+  try {
+    const [wxRes, seaRes] = await Promise.all([
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${WX_LAT}&longitude=${WX_LON}&current=temperature_2m&timezone=Europe%2FAthens`),
+      fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${WX_LAT}&longitude=${WX_LON}&current=sea_surface_temperature&timezone=Europe%2FAthens`),
+    ]);
+    const wx = await wxRes.json();
+    const sea = await seaRes.json();
+    const air = Math.round(wx?.current?.temperature_2m);
+    const seaTemp = Math.round(sea?.current?.sea_surface_temperature);
+    if (!Number.isNaN(air)) $("weather-air").textContent = air + "°";
+    if (!Number.isNaN(seaTemp)) $("weather-sea").textContent = seaTemp + "°";
+    $("weather-updated").textContent =
+      "aktualisiert " + new Date().toLocaleTimeString("de-AT", { hour: "2-digit", minute: "2-digit" });
+  } catch (e) {
+    console.error("Wetter-Abruf fehlgeschlagen", e);
+    $("weather-updated").textContent = "Live-Wetter aktuell nicht verfügbar";
+  }
+}
+
+// ---------- Firestore subscriptions ----------
+function subscribeState() {
+  const ref = doc(db, "tripData", "state");
+  onSnapshot(ref, (snap) => {
+    tripState = snap.exists() ? (snap.data().activities || {}) : {};
+    renderDays();
+    renderProgress();
+  });
+}
+
+function subscribeNews() {
+  const ref = doc(db, "tripData", "news");
+  onSnapshot(ref, (snap) => {
+    newsList = snap.exists() ? (snap.data().posts || []) : [];
+    renderNews();
+  });
+}
+
+async function toggleDone(activityId) {
+  const prev = tripState[activityId] || {};
+  const next = { ...tripState, [activityId]: { ...prev, done: !prev.done, doneBy: myName } };
+  await setDoc(doc(db, "tripData", "state"), { activities: next });
+}
+
+async function saveEdit(activityId, text) {
+  const prev = tripState[activityId] || {};
+  const next = { ...tripState, [activityId]: { ...prev, text, editedBy: myName } };
+  await setDoc(doc(db, "tripData", "state"), { activities: next });
+}
+
+async function postNews(text) {
+  if (!text.trim()) return;
+  const entry = { id: Date.now(), text: text.trim(), ts: new Date().toISOString() };
+  const next = [entry, ...newsList];
+  await setDoc(doc(db, "tripData", "news"), { posts: next });
+}
+
+$("news-send-btn").addEventListener("click", () => {
+  const input = $("news-input");
+  postNews(input.value);
+  input.value = "";
+});
+$("news-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") $("news-send-btn").click();
+});
+
+// ---------- Rendering ----------
+function renderStaticParts() {
+  const donts = $("donts-list");
+  donts.innerHTML = "";
+  DONTS.forEach((d) => {
+    const li = document.createElement("li");
+    li.textContent = d;
+    donts.appendChild(li);
+  });
+}
+
+function renderProgress() {
+  let total = 0, done = 0;
+  DAYS.forEach((day) => {
+    SLOT_ORDER.forEach((s) => {
+      if (day.slots[s]) {
+        total++;
+        if (tripState[`${day.id}-${s}`]?.done) done++;
+      }
+    });
+  });
+  $("progress-text").textContent = `${done}/${total}`;
+  $("progress-fill").style.width = total ? `${Math.round((done / total) * 100)}%` : "0%";
+}
+
+function renderNews() {
+  const list = $("news-list");
+  if (newsList.length === 0) {
+    list.innerHTML = '<div style="font-size:13px; opacity:0.55;">Noch keine Neuigkeiten vom Organisator.</div>';
+    return;
+  }
+  list.innerHTML = "";
+  newsList.forEach((n) => {
+    const div = document.createElement("div");
+    div.className = "news-item";
+    const ts = new Date(n.ts).toLocaleString("de-AT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+    div.innerHTML = `${escapeHtml(n.text)}<div class="news-ts">${ts}</div>`;
+    list.appendChild(div);
+  });
+}
+
+function renderDays() {
+  const container = $("days-container");
+  container.innerHTML = "";
+  DAYS.forEach((day) => {
+    const ticket = document.createElement("div");
+    ticket.className = "day-ticket";
+
+    const head = document.createElement("div");
+    head.className = "day-head";
+    head.style.background = day.splash ? "#B5432E" : "#16213E";
+    head.innerHTML = `
+      <div style="display:flex; align-items:baseline;">
+        <span class="disp">${day.weekday}</span><span class="mono day-date">${day.date}</span>
+      </div>
+      ${day.splash ? '<div class="splash-badge">🎉 Family Splash Day</div>' : ""}
+    `;
+    ticket.appendChild(head);
+
+    const perf = document.createElement("div");
+    perf.className = "perf";
+    ticket.appendChild(perf);
+
+    SLOT_ORDER.filter((s) => day.slots[s]).forEach((slotKey) => {
+      const slot = day.slots[slotKey];
+      const activityId = `${day.id}-${slotKey}`;
+      const entry = tripState[activityId] || {};
+      const displayText = entry.text !== undefined ? entry.text : [slot.title, ...slot.items].join(" · ");
+
+      const row = document.createElement("div");
+      row.className = "slot-row";
+
+      const checkBtn = document.createElement("button");
+      checkBtn.className = "check-btn";
+      checkBtn.innerHTML = entry.done
+        ? '<span style="color:#3C7A4E; font-size:22px;">✔</span>'
+        : '<span style="color:#C9C2A6; font-size:22px;">○</span>';
+      checkBtn.addEventListener("click", () => toggleDone(activityId));
+      row.appendChild(checkBtn);
+
+      const body = document.createElement("div");
+      body.className = "slot-body";
+      body.innerHTML = `
+        <div class="slot-label">${slot.icon} ${SLOT_LABELS[slotKey]}</div>
+        <button class="edit-btn" title="Bearbeiten">✏️</button>
+        <div class="slot-text ${entry.done ? "done" : ""}">${escapeHtml(displayText)}</div>
+        ${entry.editedBy ? `<div class="edited-by">bearbeitet von ${escapeHtml(entry.editedBy)}</div>` : ""}
+      `;
+      const editBtn = body.querySelector(".edit-btn");
+      editBtn.addEventListener("click", () => openEdit(body, activityId, displayText, entry));
+      row.appendChild(body);
+
+      ticket.appendChild(row);
+    });
+
+    container.appendChild(ticket);
+  });
+}
+
+function openEdit(body, activityId, currentText, entry) {
+  body.innerHTML = `
+    <div class="slot-label"></div>
+    <div class="edit-area">
+      <textarea rows="2">${escapeHtml(currentText)}</textarea>
+      <div class="edit-actions">
+        <button class="btn-save">✔ Speichern</button>
+        <button class="btn-cancel">✕ Abbrechen</button>
+      </div>
+    </div>
+  `;
+  const textarea = body.querySelector("textarea");
+  body.querySelector(".btn-save").addEventListener("click", async () => {
+    await saveEdit(activityId, textarea.value);
+  });
+  body.querySelector(".btn-cancel").addEventListener("click", () => renderDays());
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
