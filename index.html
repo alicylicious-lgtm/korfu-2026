@@ -1,570 +1,944 @@
-<!DOCTYPE html>
-<html lang="de">
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Corfu 2026</title>
-<link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#16213E" />
-
-<!-- iOS Home-Screen Support -->
-<link rel="apple-touch-icon" href="apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Corfu 2026" />
-
-<!-- Favicon / general icons -->
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Double Feature</title>
+<meta name="theme-color" content="#17120f" id="themeColor">
+<meta name="color-scheme" content="dark light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem('cft-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
-  * { box-sizing: border-box; }
-  body { margin: 0; background: #F6F1E4; color: #16213E; font-family: 'Karla', system-ui, sans-serif; }
-  .disp { font-family: 'Oswald', sans-serif; letter-spacing: 0.02em; }
-  .mono { font-family: 'Space Mono', monospace; }
-  button { font-family: inherit; }
-  a { color: inherit; }
-
-  #loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-
-  /* ---- Login screen ---- */
-  #login-screen { min-height: 100vh; background: #16213E; color: #F6F1E4; padding: 40px 16px; display: none; }
-  #login-inner { max-width: 560px; margin: 0 auto; }
-  .eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; opacity: 0.8; font-size: 12px; letter-spacing: 0.15em; }
-  #login-inner h1 { font-size: 40px; margin: 6px 0 4px; text-transform: uppercase; }
-  .sub { opacity: 0.75; margin-bottom: 30px; }
-  .google-btn { display: flex; align-items: center; gap: 10px; background: #F6F1E4; color: #16213E; border: none; border-radius: 10px; padding: 12px 20px; font-weight: 700; font-size: 15px; cursor: pointer; }
-  .fam-block { margin-bottom: 22px; }
-  .fam-label { font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
-  .fam-members { display: flex; flex-wrap: wrap; gap: 8px; }
-  .name-btn { background: #F6F1E4; color: #16213E; border-radius: 10px; padding: 10px 16px; font-weight: 700; font-size: 15px; cursor: pointer; border-width: 2px; border-style: solid; }
-
-  /* ---- Main app ---- */
-  #app { display: none; padding-bottom: 60px; }
-  #hero { background: #16213E; color: #F6F1E4; padding: 22px 16px 26px; }
-  #hero-inner { max-width: 760px; margin: 0 auto; }
-  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
-  #hero-inner h1 { font-size: 30px; margin: 4px 0 2px; text-transform: uppercase; }
-  .logout-btn { background: transparent; border: 1px solid rgba(246,241,228,0.4); color: #F6F1E4; border-radius: 8px; padding: 6px 10px; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-  .progress-row { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; margin-bottom: 5px; }
-  .progress-track { height: 8px; background: rgba(246,241,228,0.15); border-radius: 4px; overflow: hidden; }
-  .progress-fill { height: 100%; background: #C9862B; transition: width 0.4s; }
-
-  #content { max-width: 760px; margin: 0 auto; padding: 0 16px; }
-  .card { background: #FFFFFF; border: 1px solid #E8E0CC; border-radius: 14px; padding: 16px; }
-  .card-title { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em; }
-  #news-input-row { display: flex; gap: 8px; margin-bottom: 14px; }
-  #news-input-row input { flex: 1; border: 1px solid #E8E0CC; border-radius: 8px; padding: 9px 12px; font-size: 14px; font-family: inherit; }
-  #news-input-row button { background: #16213E; color: #F6F1E4; border: none; border-radius: 8px; padding: 0 14px; cursor: pointer; }
-  .news-item { background: #F6F1E4; border-radius: 8px; padding: 9px 12px; font-size: 14px; margin-bottom: 8px; }
-  .news-ts { font-size: 10px; opacity: 0.5; margin-top: 3px; }
-
-  .side-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-  #weather-card { background: #2E8C9C; color: #F6F1E4; border-radius: 14px; padding: 16px; }
-  .weather-nums { display: flex; gap: 16px; }
-  .weather-num .disp { font-size: 26px; }
-  .weather-label { font-size: 11px; opacity: 0.8; }
-
-  h2.section-title { font-size: 22px; margin-top: 32px; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
-
-  .day-ticket { background: #FFFFFF; border: 1px solid #E8E0CC; border-radius: 16px; margin-bottom: 16px; overflow: hidden; position: relative; }
-  .day-head { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; color: #F6F1E4; }
-  .day-head .disp { font-size: 20px; text-transform: uppercase; }
-  .day-date { font-size: 13px; opacity: 0.85; margin-left: 10px; }
-  .splash-badge { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-  .perf { border-top: 1px dashed #D9CFAE; }
-
-  .slot-row { padding: 12px 16px; border-bottom: 1px solid #F0EBDA; display: flex; gap: 12px; align-items: flex-start; }
-  .slot-row:last-child { border-bottom: none; }
-  .check-btn { background: none; border: none; padding: 0; margin-top: 2px; cursor: pointer; }
-  .slot-body { flex: 1; min-width: 0; }
-  .slot-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.55; margin-bottom: 2px; }
-  .slot-text { font-size: 14px; }
-  .slot-text.done { text-decoration: line-through; opacity: 0.5; }
-  .edited-by { font-size: 10px; opacity: 0.5; margin-top: 2px; }
-  .edit-btn { background: none; border: none; cursor: pointer; opacity: 0.4; padding: 2px; float: right; }
-  .edit-area textarea { width: 100%; border: 1px solid #E8E0CC; border-radius: 8px; padding: 8px; font-size: 14px; font-family: inherit; resize: vertical; }
-  .edit-actions { display: flex; gap: 6px; margin-top: 6px; }
-  .edit-actions button { border-radius: 6px; padding: 5px 10px; font-size: 12px; cursor: pointer; }
-  .btn-save { background: #16213E; color: #F6F1E4; border: none; }
-  .btn-cancel { background: none; border: 1px solid #E8E0CC; }
-
-  .donts-card { background: #FFF8EC; border: 1px solid #E8D9AE; border-radius: 14px; padding: 16px; margin-top: 24px; }
-  .donts-card .card-title { color: #B5432E; }
-  .donts-card ul { margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px; }
-  .donts-card li { font-size: 13.5px; line-height: 1.4; display: list-item; }
-
-  .footer-note { text-align: center; margin-top: 30px; opacity: 0.5; font-size: 12px; }
-  .row-flex { display: flex; align-items: center; gap: 6px; }
+:root{--bg:#17120f;--bg2:#1f1813;--card:#2a211b;--line:#3a2e26;--text:#f3e9dc;--muted:#b3a393;--amber:#e0a458;--terra:#c8553d;--ok:#8fb573;--on-amber:#17120f;--on-ok:#10200a;--glass:rgba(23,18,15,.92);--chip:rgba(23,18,15,.88);--soft:#d8cbbb;--pa:#f08a73;--scrim:rgba(0,0,0,.65);--r:14px;color-scheme:dark}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#faf5ee;--bg2:#f3eadf;--card:#fffdf9;--line:#e2d4c3;--text:#2a1f17;--muted:#78665a;--amber:#a8620c;--terra:#b8442d;--ok:#4f7a35;--on-amber:#fff;--on-ok:#fff;--glass:rgba(250,245,238,.92);--chip:rgba(255,253,249,.92);--soft:#4a3b2e;--pa:#b8442d;--scrim:rgba(40,28,18,.5);color-scheme:light}}
+:root[data-theme="light"]{--bg:#faf5ee;--bg2:#f3eadf;--card:#fffdf9;--line:#e2d4c3;--text:#2a1f17;--muted:#78665a;--amber:#a8620c;--terra:#b8442d;--ok:#4f7a35;--on-amber:#fff;--on-ok:#fff;--glass:rgba(250,245,238,.92);--chip:rgba(255,253,249,.92);--soft:#4a3b2e;--pa:#b8442d;--scrim:rgba(40,28,18,.5);color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font:15px/1.45 'DM Sans',system-ui,-apple-system,sans-serif;min-height:100vh;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+h1,h2,h3,.brand{font-family:'Fraunces',Georgia,serif;font-weight:600}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:20;background:var(--glass);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.brand{font-size:22px;letter-spacing:.2px}
+.brand span{color:var(--amber)}
+.who{display:flex;align-items:center;gap:8px}
+.av{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:13px;background:var(--amber);color:var(--on-amber)}
+.av.p{background:var(--terra);color:#fff}
+.av.empty{background:transparent;border:1.5px dashed var(--muted);color:var(--muted)}
+.iconbtn{width:34px;height:34px;border-radius:50%;color:var(--muted);font-size:18px}
+.iconbtn:hover{background:var(--card);color:var(--text)}
+#banner .wrap{padding-top:12px}
+.banner{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:var(--r);padding:12px 14px;font-size:14px}
+main{padding-top:16px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--glass);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+nav button{padding:10px 0 9px;color:var(--muted);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button b{font-size:19px;font-weight:400;line-height:1}
+nav button.on{color:var(--amber)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+select,.search,.field{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-width:100%}
+.search{width:100%;padding:12px 14px;font-size:16px;margin-bottom:14px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{padding:8px 14px;color:var(--muted)}
+.seg button.on{background:var(--amber);color:var(--on-amber);font-weight:600}
+.chk{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
+.hint{color:var(--muted);font-size:13px;margin:2px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:16px 12px}
+.card{cursor:pointer}
+.poster{position:relative;aspect-ratio:2/3;border-radius:var(--r);overflow:hidden;background:var(--card);border:1px solid var(--line)}
+.poster img{width:100%;height:100%;object-fit:cover;display:block}
+.noposter{height:100%;display:grid;place-items:center;text-align:center;padding:10px;color:var(--muted);font-family:'Fraunces',serif}
+.badge{position:absolute;top:8px;left:8px;background:var(--chip);padding:2px 7px;border-radius:99px;font-size:12px;color:var(--amber);font-weight:600}
+.marks{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.dot{background:var(--chip);border-radius:99px;padding:2px 8px;font-size:11px;font-weight:600}
+.dot.me{color:var(--amber)}.dot.pa{color:var(--pa)}
+.quick{position:absolute;left:0;right:0;bottom:0;display:flex;gap:6px;padding:8px;background:linear-gradient(transparent,rgba(0,0,0,.8))}
+.quick button{flex:1;background:rgba(243,233,220,.18);color:#f3e9dc;border-radius:9px;padding:6px 0;font-size:15px}
+.quick button.on{background:var(--amber);color:var(--on-amber)}
+.card h3{font-size:15px;margin-top:8px;line-height:1.25}
+.card p{color:var(--muted);font-size:13px}
+.why{color:var(--amber)!important;font-size:12px!important;margin-top:3px}
+.tag{display:inline-block;background:var(--terra);color:#fff;border-radius:99px;font-size:11px;font-weight:600;padding:1px 8px;margin-top:4px}
+.btn{background:var(--amber);color:var(--on-amber);border-radius:11px;padding:11px 18px;font-weight:600}
+.btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--line)}
+.btn.more{display:block;margin:22px auto 8px}
+.btn.small{padding:8px 12px;font-size:14px}
+.center{display:grid;place-items:center;padding:40px 16px;text-align:center}
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--amber);border-radius:50%;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty h2{color:var(--text);font-size:21px;margin-bottom:6px}
+.screen{min-height:100vh;display:grid;place-items:center;padding:24px}
+.panel{max-width:400px;width:100%;text-align:center}
+.panel h1{font-size:34px;margin-bottom:8px}
+.panel h1 span{color:var(--amber)}
+.panel p{color:var(--muted);margin-bottom:22px}
+.panel .btn{width:100%;margin-bottom:12px}
+.panel input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px;text-align:center;letter-spacing:3px;text-transform:uppercase;font-size:17px;margin-bottom:10px}
+.or{color:var(--muted);font-size:13px;margin:6px 0 14px}
+#modal{position:fixed;inset:0;z-index:50;display:none;background:var(--scrim);align-items:flex-end;justify-content:center}
+#modal.open{display:flex}
+.sheet{background:var(--bg2);border:1px solid var(--line);border-radius:22px 22px 0 0;width:100%;max-width:640px;max-height:90vh;overflow:auto;padding:18px 18px calc(24px + env(safe-area-inset-bottom));position:relative}
+@media(min-width:700px){#modal{align-items:center}.sheet{border-radius:22px}}
+.close{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:var(--card);font-size:18px}
+.mhead{display:flex;gap:14px;margin-bottom:14px;padding-right:30px}
+.mhead img,.mhead .noposter{width:96px;aspect-ratio:2/3;border-radius:10px;object-fit:cover;flex:none;background:var(--card)}
+.mhead h2{font-size:23px;line-height:1.15;margin-bottom:4px}
+.meta{color:var(--muted);font-size:13px}
+.over{margin:10px 0 14px;color:var(--soft)}
+.sec{margin:16px 0 6px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-size:13px}
+.rates{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.rate{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 0;font-weight:600}
+.rate.on{background:var(--amber);color:var(--on-amber);border-color:var(--amber)}
+.rate.hi:not(.on){color:var(--amber)}
+.row{display:flex;gap:8px;margin-top:12px}
+.row .btn{flex:1;padding:11px 6px}
+.btn.on{background:var(--ok);color:var(--on-ok)}
+.partner{margin-top:14px;padding:10px 12px;background:var(--card);border-radius:10px;font-size:14px}
+.jw{font-size:11px;color:var(--muted);margin-top:6px}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--card);border:1px solid var(--line);padding:10px 16px;border-radius:12px;z-index:60;display:none;max-width:90%;font-size:14px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+.code{font-family:'Fraunces',serif;font-size:30px;letter-spacing:5px;color:var(--amber);margin:6px 0 12px}
+.linkbtn{color:var(--muted);text-decoration:underline;font-size:14px;margin-top:8px}
+/* comments */
+.cm{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:8px}
+.cm.mine{border-color:var(--amber)}
+.cm b{font-size:13px}.cm p{margin-top:2px;overflow-wrap:anywhere}
+.cform{display:flex;gap:8px;margin-top:8px}
+.cform .field{flex:1;font-size:16px}
+/* settings */
+.srow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.srow.sub{padding-left:2px}
+input.sw{-webkit-appearance:none;appearance:none;width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;flex:none;transition:background .2s}
+input.sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:left .2s,background .2s}
+input.sw:checked{background:var(--amber)}
+input.sw:checked::after{left:21px;background:var(--on-amber)}
+input.sw:disabled{opacity:.4;cursor:default}
+.nform{display:flex;gap:8px}.nform .field{flex:1;font-size:16px}
+/* install bar */
+#install.show{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:45;max-width:520px;margin:0 auto}
+.ibar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--amber);border-radius:16px;padding:10px 10px 10px 14px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.ibar div{flex:1;font-size:13px;line-height:1.3}
+.ibar b{display:block;font-size:14px}
+.ibar span{color:var(--muted)}
 </style>
 </head>
 <body>
-
-<div id="loading">Lädt …</div>
-
-<div id="login-screen">
-  <div id="login-inner">
-    <div class="eyebrow">✈️ <span>CORFU · GREECE</span></div>
-    <h1>Corfu 2026</h1>
-    <div class="sub">Sun. Sea. Stories. — Melde dich mit Google an.</div>
-    <button class="google-btn" id="google-login-btn">🔵 Mit Google anmelden</button>
-    <div id="login-error" style="display:none; margin-top:14px; background:rgba(200,80,60,0.2); border:1px solid #C8503C; border-radius:8px; padding:10px 14px; font-size:13px;"></div>
-    <div id="name-picker" style="margin-top:30px; display:none;">
-      <div class="sub" style="margin-bottom:16px;">Angemeldet — wer bist du?</div>
-      <div id="fam-list"></div>
-    </div>
-  </div>
-</div>
-
-<div id="app">
-  <div id="hero">
-    <div id="hero-inner">
-      <div class="hero-top">
-        <div>
-          <div class="eyebrow">✈️ <span class="mono">4–11 AUG 2026</span></div>
-          <h1 class="disp">Corfu 2026</h1>
-          <div style="opacity:0.75; font-size:13px;">Ekati Mare Lifestyle Resort · Kavos</div>
-        </div>
-        <button class="logout-btn" id="logout-btn">↩ <span id="me-name"></span></button>
-      </div>
-      <div style="margin-top:18px;">
-        <div class="progress-row"><span>Reiseplan-Fortschritt</span><span class="mono" id="progress-text">0/0</span></div>
-        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="content">
-    <div class="card" style="margin-top:20px;">
-      <div class="card-title">📣 News vom Organisator</div>
-      <div id="news-input-row" style="display:none;">
-        <input id="news-input" placeholder="Ankündigung schreiben…" />
-        <button id="news-send-btn">➤</button>
-      </div>
-      <div id="news-list"></div>
-    </div>
-
-    <div class="side-grid">
-      <div id="weather-card">
-        <div class="row-flex" style="margin-bottom:8px; opacity:0.9; justify-content:space-between;">
-          <span class="row-flex">🌡 <span class="disp" style="font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Wetter · Kavos</span></span>
-          <span class="mono" style="font-size:9px; opacity:0.8;">LIVE</span>
-        </div>
-        <div class="weather-nums">
-          <div class="weather-num"><div class="disp" id="weather-air">–°</div><div class="weather-label">Luft</div></div>
-          <div class="weather-num"><div class="disp" id="weather-sea">–°</div><div class="weather-label">Meer</div></div>
-        </div>
-        <div id="weather-updated" style="font-size:11px; opacity:0.75; margin-top:6px;">lädt …</div>
-      </div>
-      <div class="card">
-        <div class="row-flex" style="margin-bottom:8px;">👥 <span class="disp" style="font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Crew</span></div>
-        <div class="disp" style="font-size:26px;">17</div>
-        <div style="font-size:12px; opacity:0.7;">Reisende, 6 Familien, ein Home Base</div>
-      </div>
-    </div>
-
-    <h2 class="section-title disp">Reiseplan</h2>
-    <div id="days-container"></div>
-
-    <div class="donts-card">
-      <div class="card-title">⚠️ Don'ts — bleiben wir fair</div>
-      <ul id="donts-list"></ul>
-    </div>
-
-    <div class="footer-note mono">CFU · 17 TRAVELLERS · ONE CREW</div>
-  </div>
-</div>
+<div id="app"></div>
+<div id="install"></div>
+<div id="modal"></div>
+<div id="toast"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-  getFirestore, doc, getDoc, setDoc, onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { firebaseConfig } from './firebase-config.js';
+import { APP_NAME } from './app-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { getMessaging, getToken, deleteToken, isSupported } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js';
 
-// ============================================================
-// 1) FIREBASE CONFIG — hier deine eigenen Werte aus der
-//    Firebase Console einfügen (Projekteinstellungen → Web-App)
-// ============================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyD06A0U0Dqzm285AE68YG8I5KYvx6isMR0",
-  authDomain: "korfu-2026-d1211.firebaseapp.com",
-  projectId: "korfu-2026-d1211",
-  storageBucket: "korfu-2026-d1211.firebasestorage.app",
-  messagingSenderId: "804377200455",
-  appId: "1:804377200455:web:25cbaf34c32dcc3a116e62",
-  measurementId: "G-JR4VWHE4BD",
+document.title = APP_NAME;
+const swReady = 'serviceWorker' in navigator
+  ? (navigator.serviceWorker.register('/sw.js').catch(() => {}), navigator.serviceWorker.ready.catch(() => null))
+  : Promise.resolve(null);
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+/* ---------- helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const IMG = 'https://image.tmdb.org/t/p/';
+const posterUrl = (p, w = 'w342') => (p ? IMG + w + p : '');
+const today = () => new Date().toISOString().slice(0, 10);
+const brand = () => { const w = APP_NAME.split(' '); const last = w.pop(); return `${esc(w.join(' '))}${w.length ? ' ' : ''}<span>${esc(last)}</span>`; };
+function ago(ts) {
+  const s = (Date.now() - ts) / 1000;
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + ' min ago';
+  if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+  if (s < 604800) return Math.floor(s / 86400) + ' d ago';
+  return new Date(ts).toLocaleDateString('en-GB');
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (t.style.display = 'none'), 3500);
+}
+
+/* theme */
+function applyTheme() {
+  const t = localStorage.getItem('cft-theme') || 'auto';
+  if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+  const dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  $('#themeColor').content = dark ? '#17120f' : '#faf5ee';
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyTheme);
+applyTheme();
+
+const apiCache = new Map();
+async function tmdb(path, params = {}) {
+  const qs = new URLSearchParams({ path, ...params }).toString();
+  if (apiCache.has(qs)) return apiCache.get(qs);
+  const r = await fetch('/api/tmdb?' + qs);
+  if (!r.ok) throw new Error('TMDB request failed (' + r.status + ')');
+  const data = await r.json();
+  apiCache.set(qs, data);
+  return data;
+}
+
+function norm(r, type) {
+  const t = r.media_type || type;
+  if (t !== 'movie' && t !== 'tv') return null;
+  const date = r.release_date || r.first_air_date || '';
+  return {
+    key: `${t}_${r.id}`, type: t, tmdbId: r.id,
+    title: r.title || r.name || 'Untitled',
+    year: date.slice(0, 4),
+    poster: r.poster_path || null,
+    genres: r.genre_ids || (r.genres || []).map((g) => g.id),
+    vote: Math.round((r.vote_average || 0) * 10) / 10,
+    votes: r.vote_count || 0,
+    overview: r.overview || '',
+  };
+}
+const fromDoc = (key, t) => ({ key, type: t.type, tmdbId: t.tmdbId, title: t.title, year: t.year, poster: t.poster, genres: t.genres || [], vote: t.vote || 0, votes: 0, overview: '' });
+
+/* ---------- state ---------- */
+const DEFAULT_PREFS = { rated: true, must: true, comment: true, joined: true, minRating: 0 };
+const S = {
+  ready: false, user: null, roomId: null, room: null, titles: new Map(),
+  items: new Map(), detail: {}, tab: 'discover', screen: '',
+  genres: {}, provs: {},
+  disc: { type: 'movie', genre: '', minr: '', sort: 'popularity', prov: '', wish: false, half: false, items: [], seen: new Set(), page: 0, loading: false, end: false },
+  q: '', results: [], searching: false, searchToken: 0,
+  picks: null, picksType: 'all',
+  shelfFilter: 'all',
+  modal: null,
+  prefs: { ...DEFAULT_PREFS }, pushOn: false, pushSupported: false, installEvt: null,
+};
+let unsubRoom = null, unsubTitles = null, lastModal = null;
+
+const uid = () => S.user?.uid;
+const firstName = () => (S.user?.displayName || 'Me').split(' ')[0];
+const partnerUid = () => S.room?.members?.find((u) => u !== uid());
+const nameOf = (u) => (u ? S.room?.memberNames?.[u] || (u === uid() ? firstName() : 'Partner') : 'Partner');
+const mine = (key) => S.titles.get(key)?.ratings?.[uid()] || {};
+const theirs = (key) => { const p = partnerUid(); return p ? S.titles.get(key)?.ratings?.[p] || {} : {}; };
+const seenByAny = (key) => Object.values(S.titles.get(key)?.ratings || {}).some((r) => r.seen);
+const seenByAll = (key) => {
+  const r = S.titles.get(key)?.ratings || {};
+  const m = S.room?.members || [];
+  return m.length > 0 && m.every((u) => r[u]?.seen);
+};
+const isMust = (key) => Object.values(S.titles.get(key)?.ratings || {}).some((r) => r.want || r.again);
+const hidden = (key) => (S.disc.half ? seenByAll(key) : seenByAny(key));
+const reg = (it) => { if (it) S.items.set(it.key, it); return it; };
+
+/* ---------- notifications (sender side) ---------- */
+async function notify(type, extra = {}) {
+  try {
+    if (!S.user || !S.roomId || (S.room?.members || []).length < 2) return;
+    const token = await S.user.getIdToken();
+    fetch('/api/notify', {
+      method: 'POST', keepalive: true,
+      headers: { 'content-type': 'application/json', authorization: 'Bearer ' + token },
+      body: JSON.stringify({ roomId: S.roomId, type, appName: APP_NAME, ...extra }),
+    }).catch(() => {});
+  } catch (e) { /* notifications are best-effort */ }
+}
+const pending = {};
+function notifyLater(id, type, extra, ms = 6000) { clearTimeout(pending[id]); pending[id] = setTimeout(() => notify(type, extra), ms); }
+
+async function setMine(item, patch) {
+  const cur = mine(item.key);
+  const next = { seen: !!cur.seen, want: !!cur.want, again: !!cur.again, rating: cur.rating ?? null, ...patch, at: Date.now() };
+  if (next.rating) next.seen = true;
+  if (next.seen) next.want = false;
+  if (!next.seen) { next.rating = null; next.again = false; }
+  const data = {
+    type: item.type, tmdbId: item.tmdbId, title: item.title, year: item.year || '',
+    poster: item.poster || null, genres: item.genres || [], vote: item.vote || 0,
+    ratings: { [uid()]: next },
+  };
+  try { await setDoc(doc(db, 'rooms', S.roomId, 'titles', item.key), data, { merge: true }); }
+  catch (e) { toast('Could not save: ' + e.message); return; }
+
+  const base = { titleKey: item.key, title: item.title };
+  const wasRating = cur.rating ?? null;
+  if (next.seen && (next.rating ? next.rating !== wasRating : !cur.seen)) notifyLater('rated-' + item.key, 'rated', { ...base, rating: next.rating || 0 });
+  if (next.want && !cur.want) notifyLater('must-' + item.key, 'must', { ...base, change: 'add' }, 3000);
+  else if (next.again && !cur.again) notifyLater('must-' + item.key, 'must', { ...base, change: 'again' }, 3000);
+  else if ((!next.want && cur.want) || (!next.again && cur.again)) clearTimeout(pending['must-' + item.key]);
+}
+
+async function addComment(key, text) {
+  const item = S.items.get(key); text = text.trim().slice(0, 300);
+  if (!item || !text) return;
+  const data = {
+    type: item.type, tmdbId: item.tmdbId, title: item.title, year: item.year || '',
+    poster: item.poster || null, genres: item.genres || [], vote: item.vote || 0,
+    comments: arrayUnion({ uid: uid(), text, at: Date.now() }),
+  };
+  try {
+    await setDoc(doc(db, 'rooms', S.roomId, 'titles', key), data, { merge: true });
+    notify('comment', { titleKey: key, title: item.title, text });
+  } catch (e) { toast('Could not send: ' + e.message); }
+}
+
+/* ---------- push (receiver side) ---------- */
+isSupported().then((v) => { S.pushSupported = v && 'Notification' in window; }).catch(() => {});
+const pushConfigured = () => firebaseConfig.vapidKey && !String(firebaseConfig.vapidKey).startsWith('YOUR_');
+
+async function enablePush() {
+  if (!S.pushSupported) throw new Error("This browser doesn't support push notifications.");
+  if (!pushConfigured()) throw new Error('Push is not configured yet (missing VAPID key).');
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') throw new Error('Notifications were not allowed.');
+  const reg = await swReady;
+  if (!reg) throw new Error('Service worker unavailable.');
+  const token = await getToken(getMessaging(fbApp), { vapidKey: firebaseConfig.vapidKey, serviceWorkerRegistration: reg });
+  if (!token) throw new Error('Could not get a push token.');
+  await setDoc(doc(db, 'users', uid()), { tokens: arrayUnion(token), notif: S.prefs }, { merge: true });
+  localStorage.setItem('cft-token', token);
+  localStorage.setItem('cft-push', '1');
+  S.pushOn = true;
+}
+
+async function disablePush() {
+  const token = localStorage.getItem('cft-token');
+  try { await deleteToken(getMessaging(fbApp)); } catch (e) {}
+  if (token) await setDoc(doc(db, 'users', uid()), { tokens: arrayRemove(token) }, { merge: true });
+  localStorage.removeItem('cft-token'); localStorage.removeItem('cft-push');
+  S.pushOn = false;
+}
+
+// Keep the stored token fresh on each sign-in.
+async function syncPush() {
+  try {
+    if (localStorage.getItem('cft-push') !== '1' || !('Notification' in window) || Notification.permission !== 'granted' || !pushConfigured()) return;
+    S.pushOn = true;
+    const reg = await swReady; if (!reg) return;
+    const token = await getToken(getMessaging(fbApp), { vapidKey: firebaseConfig.vapidKey, serviceWorkerRegistration: reg });
+    if (token && token !== localStorage.getItem('cft-token')) {
+      await setDoc(doc(db, 'users', uid()), { tokens: arrayUnion(token) }, { merge: true });
+      localStorage.setItem('cft-token', token);
+    }
+  } catch (e) {}
+}
+
+navigator.serviceWorker?.addEventListener('message', (e) => { if (e.data?.type === 'push') toast(e.data.body); });
+
+/* ---------- install prompt ---------- */
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); S.installEvt = e; paintInstall();
+  if (S.modal === 'settings') renderModal();
+});
+window.addEventListener('appinstalled', () => { S.installEvt = null; paintInstall(); toast('Installed 🎉'); });
+
+function paintInstall() {
+  const el = $('#install');
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const dismissed = Number(localStorage.getItem('cft-install-dismissed') || 0) > Date.now() - 7 * 864e5;
+  if (!S.installEvt || standalone || dismissed) { el.className = ''; el.innerHTML = ''; return; }
+  const where = /Android|Mobi/i.test(navigator.userAgent) ? 'home screen' : 'desktop';
+  el.className = 'show';
+  el.innerHTML = `<div class="ibar"><div><b>Install ${esc(APP_NAME)}</b><span>Add it to your ${where} for quick access.</span></div>
+    <button class="btn small" data-act="install">Install</button><button class="iconbtn" data-act="dismissinstall" aria-label="Not now">✕</button></div>`;
+}
+
+/* ---------- auth & room ---------- */
+getRedirectResult(auth).catch((e) => toast(e.message));
+
+onAuthStateChanged(auth, async (u) => {
+  S.user = u;
+  teardown();
+  if (!u) { S.ready = true; render(); return; }
+  try {
+    const us = await getDoc(doc(db, 'users', u.uid));
+    const data = us.exists() ? us.data() : {};
+    S.prefs = { ...DEFAULT_PREFS, ...(data.notif || {}) };
+    if (data.roomId) await enterRoom(data.roomId);
+  } catch (e) { toast(e.message); }
+  S.ready = true;
+  render();
+  syncPush();
+});
+
+function teardown() {
+  unsubRoom?.(); unsubTitles?.();
+  unsubRoom = unsubTitles = null;
+  Object.assign(S, { roomId: null, room: null, titles: new Map(), picks: null, modal: null, pushOn: false });
+  Object.assign(S.disc, { items: [], seen: new Set(), page: 0, end: false, loading: false });
+}
+
+function enterRoom(rid) {
+  S.roomId = rid;
+  return new Promise((resolve) => {
+    let first = true;
+    unsubRoom = onSnapshot(doc(db, 'rooms', rid), (snap) => {
+      S.room = snap.exists() ? snap.data() : null;
+      if (first) { first = false; resolve(); } else { render(); }
+    }, (e) => { toast(e.message); resolve(); });
+    unsubTitles = onSnapshot(collection(db, 'rooms', rid, 'titles'), (snap) => {
+      S.titles = new Map(snap.docs.map((d) => [d.id, d.data()]));
+      S.titles.forEach((t, k) => { if (!S.items.has(k)) S.items.set(k, fromDoc(k, t)); });
+      if (S.room) { refreshView(); paintChrome(); if (S.tab === 'picks') ensurePicks(); if (S.modal) renderModal(); }
+    }, (e) => toast(e.message));
+  });
+}
+
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function newCode() {
+  const a = new Uint32Array(8); crypto.getRandomValues(a);
+  return [...a].map((n) => CODE_CHARS[n % CODE_CHARS.length]).join('');
+}
+
+async function createRoom() {
+  try {
+    let code = newCode();
+    while ((await getDoc(doc(db, 'rooms', code))).exists()) code = newCode();
+    await setDoc(doc(db, 'rooms', code), { members: [uid()], memberNames: { [uid()]: firstName() }, createdAt: Date.now() });
+    await setDoc(doc(db, 'users', uid()), { roomId: code }, { merge: true });
+    await enterRoom(code);
+    render();
+  } catch (e) { toast(e.message); }
+}
+
+async function joinRoom(raw) {
+  try {
+    const code = String(raw).toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (code.length < 6) throw new Error('Please enter the full code.');
+    const ref = doc(db, 'rooms', code);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) throw new Error('No room with that code.');
+    const members = snap.data().members || [];
+    const isNew = !members.includes(uid());
+    if (isNew) {
+      if (members.length >= 2) throw new Error('That room already has two people.');
+      await updateDoc(ref, { members: arrayUnion(uid()), ['memberNames.' + uid()]: firstName() });
+    }
+    await setDoc(doc(db, 'users', uid()), { roomId: code }, { merge: true });
+    await enterRoom(code);
+    localStorage.removeItem('cft-join');
+    render();
+    if (isNew) notify('joined', {});
+  } catch (e) { toast(e.message); }
+}
+
+async function login() {
+  const provider = new GoogleAuthProvider();
+  try { await signInWithPopup(auth, provider); }
+  catch (e) {
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') {
+      try { await signInWithRedirect(auth, provider); } catch (e2) { toast(e2.message); }
+    } else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') toast(e.message);
+  }
+}
+
+// capture invite link ?join=CODE
+try {
+  const j = new URLSearchParams(location.search).get('join');
+  if (j) { localStorage.setItem('cft-join', j); history.replaceState({}, '', location.pathname); }
+} catch (e) {}
+
+const inviteLink = () => `${location.origin}/?join=${S.roomId}`;
+
+/* ---------- rendering: screens ---------- */
+function render() {
+  const app = $('#app');
+  if (!S.ready) { app.innerHTML = '<div class="center"><div class="spin"></div></div>'; S.screen = 'boot'; return; }
+  const screen = !S.user ? 'login' : !S.roomId || !S.room ? 'setup' : 'main';
+  if (screen !== S.screen) {
+    S.screen = screen;
+    if (screen === 'login') app.innerHTML = loginView();
+    else if (screen === 'setup') app.innerHTML = setupView();
+    else {
+      app.innerHTML = `<header><div class="wrap"><div class="brand">${brand()}</div><div class="who" id="who"></div></div></header>
+        <div id="banner"></div><main class="wrap" id="view"></main>
+        <nav><div class="wrap" id="nav"></div></nav>`;
+      if (S.tab === 'discover' && !S.disc.items.length) loadMeta().then(() => loadDiscover(true));
+    }
+  }
+  if (screen === 'main') { paintChrome(); refreshView(); }
+  renderModal();
+  paintInstall();
+}
+
+const loginView = () => `<div class="screen"><div class="panel">
+  <h1>${brand()}</h1>
+  <p>Find the movies and series you both haven't seen yet — and what you'll both love.</p>
+  <button class="btn" data-act="login">Continue with Google</button></div></div>`;
+
+const setupView = () => {
+  const pending = localStorage.getItem('cft-join') || '';
+  return `<div class="screen"><div class="panel">
+  <h1>Hi ${esc(firstName())} 👋</h1>
+  <p>Start a shared room for the two of you, or join the one your partner already created.</p>
+  <button class="btn" data-act="create">Create our room</button>
+  <div class="or">— or join with a code —</div>
+  <form id="joinForm"><input id="joinCode" maxlength="12" placeholder="CODE" value="${esc(pending)}" autocomplete="off">
+  <button class="btn ghost" type="submit">Join room</button></form>
+  <button class="linkbtn" data-act="logout">Sign out</button></div></div>`;
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch((e) => console.error("SW-Registrierung fehlgeschlagen", e));
-  });
+function paintChrome() {
+  if (S.screen !== 'main') return;
+  const me = uid(), pu = partnerUid();
+  $('#who').innerHTML = `<div class="av" title="${esc(nameOf(me))}">${esc(nameOf(me)[0]?.toUpperCase())}</div>
+    ${pu ? `<div class="av p" title="${esc(nameOf(pu))}">${esc(nameOf(pu)[0]?.toUpperCase())}</div>` : '<button class="av empty" data-act="copy" title="Invite your partner" aria-label="Copy invite link">+</button>'}
+    <button class="iconbtn" data-act="opensettings" aria-label="Settings">⋯</button>`;
+  $('#banner').innerHTML = pu ? '' : `<div class="wrap"><div class="banner"><span>Waiting for your partner to join.</span><button class="btn" data-act="copy">Copy invite link</button></div></div>`;
+  const tabs = [['discover', '✦', 'Discover'], ['picks', '♥', 'For us'], ['search', '⌕', 'Search'], ['shelf', '▤', 'Shelf']];
+  $('#nav').innerHTML = tabs.map(([k, i, l]) => `<button class="${S.tab === k ? 'on' : ''}" data-act="tab" data-tab="${k}"><b>${i}</b>${l}</button>`).join('');
 }
 
-const ORGANIZER = "Sarang";
-
-const FAMILIES = [
-  { name: "Familie Rahmanian", color: "#2B5D8C", members: ["Sarang", "Mona", "Mila"] },
-  { name: "Familie Rahmanian", color: "#C9862B", members: ["Saed", "Doris", "Eli", "Noemi"] },
-  { name: "Familie Zarif", color: "#3C7A4E", members: ["Michel", "Puneh", "Matisse", "Olivia"] },
-  { name: "Familie Zarifzadeh", color: "#2E8C9C", members: ["Jonathan", "Amelia"] },
-  { name: "Familie Kernstock", color: "#B5432E", members: ["Bieta", "Alex", "Bruce"] },
-  { name: "Familie Sodeyfi", color: "#7A4E9C", members: ["Alice"] },
-];
-
-const DAYS = [
-  { id: "d1", weekday: "DI", date: "4 AUG", splash: false, slots: {
-      morning: { icon: "✈️", title: "Willkommen in Corfu", items: ["Ankunft", "Hotel Check-in", "Ankommen & entspannen"] },
-      afternoon: { icon: "🌊", title: "Hotelpool / Strand", items: [] },
-      evening: { icon: "🍽", title: "Dinner im Resort", items: [] },
-      night: { icon: "🌙", title: "Board Games", items: [] } } },
-  { id: "d2", weekday: "MI", date: "5 AUG", splash: false, slots: {
-      morning: { icon: "🌊", title: "Hotelpool / Strand", items: [] },
-      afternoon: { icon: "🌊", title: "Issos Beach", items: [] },
-      evening: { icon: "🍽", title: "Contessa Restaurant", items: [] },
-      night: { icon: "🌙", title: "Board Games", items: [] } } },
-  { id: "d3", weekday: "DO", date: "6 AUG", splash: true, slots: {
-      morning: { icon: "🌊", title: "Männer + alle Kinder: Aqualand", items: [] },
-      afternoon: { icon: "☀️", title: "Frauen: Chill & Relax", items: ["Hotelpool / Strand"] },
-      evening: { icon: "🍽", title: "Dinner im Resort", items: ["Cocktails & Relax"] },
-      night: { icon: "🌙", title: "Board Games", items: [] } } },
-  { id: "d4", weekday: "FR", date: "7 AUG", splash: false, slots: {
-      morning: { icon: "✈️", title: "Alex kommt an", items: ["Willkommen in Corfu!"] },
-      afternoon: { icon: "🌊", title: "Issos Beach", items: [] },
-      evening: { icon: "🍽", title: "Dinner im Resort", items: [] },
-      night: { icon: "🌙", title: "Board Games", items: [] } } },
-  { id: "d5", weekday: "SA", date: "8 AUG", splash: false, slots: {
-      morning: { icon: "🌊", title: "Hotelpool / Strand", items: ["bis 15:30 Uhr"] },
-      afternoon: { icon: "🏛", title: "Corfu Town Experience", items: ["Abfahrt 15:30", "Altstadt & Sehenswürdigkeiten", "Shopping", "Freizeit"] },
-      evening: { icon: "🍽", title: "Naok Azur (Dinner)", items: ["Cavalieri Roof Garden (Dessert)"] },
-      night: { icon: "🌙", title: "Board Games", items: [] } } },
-  { id: "d6", weekday: "SO", date: "9 AUG", splash: true, slots: {
-      morning: { icon: "🌊", title: "Männer + ältere Kinder: Aqualand", items: [] },
-      afternoon: { icon: "☀️", title: "Frauen + jüngere Kinder", items: ["Hotelpool / Strand", "Cocktails & Relax"] },
-      evening: { icon: "🍽", title: "Dinner im Resort", items: [] },
-      night: { icon: "🌙", title: "Board Games", items: [] } } },
-  { id: "d7", weekday: "MO", date: "10 AUG", splash: false, slots: {
-      morning: { icon: "🌊", title: "Hotelpool / Strand", items: [] },
-      afternoon: { icon: "🌊", title: "Hotelpool / Strand", items: [] },
-      evening: { icon: "🚢", title: "Captain's Day Boat Tour", items: ["16:30 Uhr – 4 Stunden", "Syvota, Blue Lagoon, Cave Sunset"] },
-      night: { icon: "🌙", title: "Board Games", items: [] } } },
-  { id: "d8", weekday: "DI", date: "11 AUG", splash: false, slots: {
-      morning: { icon: "✈️", title: "Bis zum nächsten Mal", items: ["Check-out & Transfer zum Flughafen"] },
-      night: { icon: "🌙", title: "Board Games", items: [] } } },
-];
-
-const DONTS = [
-  "Alice darf nicht nach einer Woche CEO von ekati werden",
-  "Alex darf nur von maximal einer Speise pro Tag ein Foto machen",
-  "Amelia darf nicht plötzlich das Handy nehmen und alle Leute filmen, nur weil sie viel lachen",
-  "Bieta darf in der Woche kein Wohnungs-Kauf abschließen",
-  "Doris darf nicht jeden Tag 3 Stunden im Zimmer verschwinden",
-  "Jonathan muss mindestens 1x am Tag ins Wasser",
-  "Michel darf nicht komische Romane lesen",
-  "Mona darf nicht komische Sachen anziehen (zB Fischnetz)",
-  "Puneh darf nur Wörter verwenden, die mindestens die Hälfte der Gruppe kennt",
-  "Saed darf nicht sein T-Shirt beim Tanzen ausziehen",
-  "Sarang darf nicht ohne Schwimmflügeli ins Wasser",
-];
-
-const SLOT_LABELS = { morning: "Vormittag", afternoon: "Nachmittag", evening: "Abend", night: "Nacht" };
-const SLOT_ORDER = ["morning", "afternoon", "evening", "night"];
-
-let currentUser = null;   // firebase auth user
-let myName = null;        // linked family name
-let tripState = {};       // { activityId: {done, doneBy, text, editedBy} }
-let newsList = [];
-
-const $ = (id) => document.getElementById(id);
-
-// ---------- Auth flow ----------
-$("google-login-btn").addEventListener("click", () => {
-  signInWithPopup(auth, provider).catch((e) => showLoginError(e));
-});
-
-function showLoginError(e) {
-  console.error("Login-Fehler", e);
-  const box = $("login-error");
-  let msg = e.message || String(e);
-  if (e.code === "auth/unauthorized-domain") {
-    msg = "Diese Domain ist in Firebase noch nicht freigeschaltet (Authentication → Settings → Autorisierte Domains).";
-  } else if (e.code === "auth/popup-blocked") {
-    msg = "Der Login-Popup wurde vom Browser blockiert. Bitte Popups für diese Seite erlauben und nochmal versuchen.";
-  } else if (e.code === "auth/popup-closed-by-user") {
-    msg = "Das Login-Fenster wurde geschlossen, bevor die Anmeldung abgeschlossen war. Bitte nochmal versuchen und den Google-Dialog ganz durchklicken.";
-  }
-  box.textContent = "Login fehlgeschlagen: " + msg;
-  box.style.display = "block";
-}
-
-$("logout-btn").addEventListener("click", () => signOut(auth));
-
-onAuthStateChanged(auth, async (user) => {
-  currentUser = user;
-  $("loading").style.display = "none";
-  if (!user) {
-    myName = null;
-    $("app").style.display = "none";
-    $("login-screen").style.display = "block";
-    $("name-picker").style.display = "none";
+function refreshView() {
+  if (S.screen !== 'main') return;
+  if (S.tab === 'search') {
+    if (!$('#q')) { $('#view').innerHTML = searchView(); }
+    paintResults();
     return;
   }
-  const profileRef = doc(db, "profiles", user.uid);
-  const snap = await getDoc(profileRef);
-  if (snap.exists()) {
-    myName = snap.data().name;
-    startApp();
-  } else {
-    renderNamePicker(profileRef);
-  }
-});
-
-function renderNamePicker(profileRef) {
-  $("login-screen").style.display = "block";
-  $("name-picker").style.display = "block";
-  const list = $("fam-list");
-  list.innerHTML = "";
-  FAMILIES.forEach((fam) => {
-    const block = document.createElement("div");
-    block.className = "fam-block";
-    const label = document.createElement("div");
-    label.className = "fam-label";
-    label.style.color = fam.color;
-    label.textContent = fam.name;
-    block.appendChild(label);
-    const membersDiv = document.createElement("div");
-    membersDiv.className = "fam-members";
-    fam.members.forEach((m) => {
-      const btn = document.createElement("button");
-      btn.className = "name-btn";
-      btn.style.borderColor = fam.color;
-      btn.textContent = m + (m === ORGANIZER ? " ★ Organisator" : "");
-      btn.addEventListener("click", async () => {
-        await setDoc(profileRef, { name: m, uid: currentUser.uid });
-        myName = m;
-        startApp();
-      });
-      membersDiv.appendChild(btn);
-    });
-    block.appendChild(membersDiv);
-    list.appendChild(block);
-  });
+  $('#view').innerHTML = S.tab === 'discover' ? discoverView() : S.tab === 'picks' ? picksView() : shelfView();
 }
 
-function startApp() {
-  $("login-screen").style.display = "none";
-  $("app").style.display = "block";
-  $("me-name").textContent = myName;
-  $("news-input-row").style.display = myName === ORGANIZER ? "flex" : "none";
-  renderStaticParts();
-  subscribeState();
-  subscribeNews();
-  loadWeather();
-  setInterval(loadWeather, 30 * 60 * 1000); // alle 30 Min. aktualisieren
-}
+const empty = (h, p) => `<div class="empty"><h2>${h}</h2><p>${p}</p></div>`;
+const spinner = '<div class="center"><div class="spin"></div></div>';
 
-// ---------- Live weather (Kavos, Corfu) ----------
-// Hinweis: bergfex hat keine öffentliche API und ist auf alpines/DACH-Wetter
-// ausgelegt, nicht auf griechische Küstenorte. Open-Meteo liefert dieselbe
-// Art Live-Daten (Luft- & Meerestemperatur) kostenlos und ohne API-Key.
-const WX_LAT = 39.38, WX_LON = 20.09; // Kavos, Corfu
-
-async function loadWeather() {
-  try {
-    const [wxRes, seaRes] = await Promise.all([
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${WX_LAT}&longitude=${WX_LON}&current=temperature_2m&timezone=Europe%2FAthens`),
-      fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${WX_LAT}&longitude=${WX_LON}&current=sea_surface_temperature&timezone=Europe%2FAthens`),
-    ]);
-    const wx = await wxRes.json();
-    const sea = await seaRes.json();
-    const air = Math.round(wx?.current?.temperature_2m);
-    const seaTemp = Math.round(sea?.current?.sea_surface_temperature);
-    if (!Number.isNaN(air)) $("weather-air").textContent = air + "°";
-    if (!Number.isNaN(seaTemp)) $("weather-sea").textContent = seaTemp + "°";
-    $("weather-updated").textContent =
-      "aktualisiert " + new Date().toLocaleTimeString("de-AT", { hour: "2-digit", minute: "2-digit" });
-  } catch (e) {
-    console.error("Wetter-Abruf fehlgeschlagen", e);
-    $("weather-updated").textContent = "Live-Wetter aktuell nicht verfügbar";
-  }
-}
-
-// ---------- Firestore subscriptions ----------
-function subscribeState() {
-  const ref = doc(db, "tripData", "state");
-  onSnapshot(ref, (snap) => {
-    tripState = snap.exists() ? (snap.data().activities || {}) : {};
-    renderDays();
-    renderProgress();
-  });
-}
-
-function subscribeNews() {
-  const ref = doc(db, "tripData", "news");
-  onSnapshot(ref, (snap) => {
-    newsList = snap.exists() ? (snap.data().posts || []) : [];
-    renderNews();
-  });
-}
-
-async function toggleDone(activityId) {
-  const prev = tripState[activityId] || {};
-  const next = { ...tripState, [activityId]: { ...prev, done: !prev.done, doneBy: myName } };
-  await setDoc(doc(db, "tripData", "state"), { activities: next });
-}
-
-async function saveEdit(activityId, text) {
-  const prev = tripState[activityId] || {};
-  const next = { ...tripState, [activityId]: { ...prev, text, editedBy: myName } };
-  await setDoc(doc(db, "tripData", "state"), { activities: next });
-}
-
-async function postNews(text) {
-  if (!text.trim()) return;
-  const entry = { id: Date.now(), text: text.trim(), ts: new Date().toISOString() };
-  const next = [entry, ...newsList];
-  await setDoc(doc(db, "tripData", "news"), { posts: next });
-}
-
-$("news-send-btn").addEventListener("click", () => {
-  const input = $("news-input");
-  postNews(input.value);
-  input.value = "";
-});
-$("news-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") $("news-send-btn").click();
-});
-
-// ---------- Rendering ----------
-function renderStaticParts() {
-  const donts = $("donts-list");
-  donts.innerHTML = "";
-  DONTS.forEach((d) => {
-    const li = document.createElement("li");
-    li.textContent = d;
-    donts.appendChild(li);
-  });
-}
-
-function renderProgress() {
-  let total = 0, done = 0;
-  DAYS.forEach((day) => {
-    SLOT_ORDER.forEach((s) => {
-      if (day.slots[s]) {
-        total++;
-        if (tripState[`${day.id}-${s}`]?.done) done++;
-      }
-    });
-  });
-  $("progress-text").textContent = `${done}/${total}`;
-  $("progress-fill").style.width = total ? `${Math.round((done / total) * 100)}%` : "0%";
-}
-
-function renderNews() {
-  const list = $("news-list");
-  if (newsList.length === 0) {
-    list.innerHTML = '<div style="font-size:13px; opacity:0.55;">Noch keine Neuigkeiten vom Organisator.</div>';
-    return;
-  }
-  list.innerHTML = "";
-  newsList.forEach((n) => {
-    const div = document.createElement("div");
-    div.className = "news-item";
-    const ts = new Date(n.ts).toLocaleString("de-AT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
-    div.innerHTML = `${escapeHtml(n.text)}<div class="news-ts">${ts}</div>`;
-    list.appendChild(div);
-  });
-}
-
-function renderDays() {
-  const container = $("days-container");
-  container.innerHTML = "";
-  DAYS.forEach((day) => {
-    const ticket = document.createElement("div");
-    ticket.className = "day-ticket";
-
-    const head = document.createElement("div");
-    head.className = "day-head";
-    head.style.background = day.splash ? "#B5432E" : "#16213E";
-    head.innerHTML = `
-      <div style="display:flex; align-items:baseline;">
-        <span class="disp">${day.weekday}</span><span class="mono day-date">${day.date}</span>
-      </div>
-      ${day.splash ? '<div class="splash-badge">🎉 Family Splash Day</div>' : ""}
-    `;
-    ticket.appendChild(head);
-
-    const perf = document.createElement("div");
-    perf.className = "perf";
-    ticket.appendChild(perf);
-
-    SLOT_ORDER.filter((s) => day.slots[s]).forEach((slotKey) => {
-      const slot = day.slots[slotKey];
-      const activityId = `${day.id}-${slotKey}`;
-      const entry = tripState[activityId] || {};
-      const displayText = entry.text !== undefined ? entry.text : [slot.title, ...slot.items].join(" · ");
-
-      const row = document.createElement("div");
-      row.className = "slot-row";
-
-      const checkBtn = document.createElement("button");
-      checkBtn.className = "check-btn";
-      checkBtn.innerHTML = entry.done
-        ? '<span style="color:#3C7A4E; font-size:22px;">✔</span>'
-        : '<span style="color:#C9C2A6; font-size:22px;">○</span>';
-      checkBtn.addEventListener("click", () => toggleDone(activityId));
-      row.appendChild(checkBtn);
-
-      const body = document.createElement("div");
-      body.className = "slot-body";
-      body.innerHTML = `
-        <div class="slot-label">${slot.icon} ${SLOT_LABELS[slotKey]}</div>
-        <button class="edit-btn" title="Bearbeiten">✏️</button>
-        <div class="slot-text ${entry.done ? "done" : ""}">${escapeHtml(displayText)}</div>
-        ${entry.editedBy ? `<div class="edited-by">bearbeitet von ${escapeHtml(entry.editedBy)}</div>` : ""}
-      `;
-      const editBtn = body.querySelector(".edit-btn");
-      editBtn.addEventListener("click", () => openEdit(body, activityId, displayText, entry));
-      row.appendChild(body);
-
-      ticket.appendChild(row);
-    });
-
-    container.appendChild(ticket);
-  });
-}
-
-function openEdit(body, activityId, currentText, entry) {
-  body.innerHTML = `
-    <div class="slot-label"></div>
-    <div class="edit-area">
-      <textarea rows="2">${escapeHtml(currentText)}</textarea>
-      <div class="edit-actions">
-        <button class="btn-save">✔ Speichern</button>
-        <button class="btn-cancel">✕ Abbrechen</button>
-      </div>
+function card(it, extra = '') {
+  if (!it) return '';
+  const m = mine(it.key), t = theirs(it.key), pu = partnerUid();
+  const dot = (cls, name, st) => st.seen
+    ? `<span class="dot ${cls}">${esc(name[0].toUpperCase())}${st.rating ? ' ' + st.rating : ' ✓'}${st.again ? ' ↻' : ''}</span>`
+    : st.want ? `<span class="dot ${cls}">${esc(name[0].toUpperCase())} ♡</span>` : '';
+  const heartOn = m.want || m.again;
+  const heartTitle = m.seen ? 'Watch again together' : 'Want to watch';
+  return `<article class="card" data-act="open" data-key="${it.key}">
+    <div class="poster">${it.poster ? `<img loading="lazy" alt="" src="${posterUrl(it.poster)}">` : `<div class="noposter">${esc(it.title)}</div>`}
+      <span class="badge">★ ${it.vote || '–'}</span>
+      <div class="marks">${dot('me', nameOf(uid()), m)}${pu ? dot('pa', nameOf(pu), t) : ''}</div>
+      <div class="quick"><button class="${m.seen ? 'on' : ''}" data-act="seen" data-key="${it.key}" title="Seen it">✓</button><button class="${heartOn ? 'on' : ''}" data-act="want" data-key="${it.key}" title="${heartTitle}">${m.seen ? '↻' : '♡'}</button></div>
     </div>
-  `;
-  const textarea = body.querySelector("textarea");
-  body.querySelector(".btn-save").addEventListener("click", async () => {
-    await saveEdit(activityId, textarea.value);
-  });
-  body.querySelector(".btn-cancel").addEventListener("click", () => renderDays());
+    <h3>${esc(it.title)}</h3><p>${esc(it.year)}${it.year ? ' · ' : ''}${it.type === 'tv' ? 'Series' : 'Movie'}</p>${extra}</article>`;
 }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
+/* ---------- Discover ---------- */
+async function loadMeta() {
+  const t = S.disc.type;
+  try {
+    if (!S.genres[t]) S.genres[t] = (await tmdb(`genre/${t}/list`)).genres || [];
+    if (!S.provs[t]) {
+      const r = (await tmdb(`watch/providers/${t}`, { watch_region: 'AT' })).results || [];
+      S.provs[t] = r.sort((a, b) => (a.display_priorities?.AT ?? 999) - (b.display_priorities?.AT ?? 999)).slice(0, 14);
+    }
+  } catch (e) { /* filters just stay empty */ }
 }
+
+async function loadDiscover(reset) {
+  const d = S.disc;
+  if (d.loading) return;
+  if (reset) Object.assign(d, { items: [], seen: new Set(), page: 0, end: false });
+  if (d.wish) { refreshView(); return; }
+  d.loading = true; refreshView();
+  try {
+    let added = 0, guard = 0;
+    while (added < 12 && !d.end && guard < 6) {
+      guard++; d.page++;
+      const p = { page: d.page, 'vote_count.gte': d.sort === 'rating' ? 300 : 30, watch_region: 'AT' };
+      p.sort_by = d.sort === 'rating' ? 'vote_average.desc' : d.sort === 'new' ? (d.type === 'movie' ? 'primary_release_date.desc' : 'first_air_date.desc') : 'popularity.desc';
+      if (d.sort === 'new') p[d.type === 'movie' ? 'primary_release_date.lte' : 'first_air_date.lte'] = today();
+      if (d.genre) p.with_genres = d.genre;
+      if (d.minr) p['vote_average.gte'] = d.minr;
+      if (d.prov) { p.with_watch_providers = d.prov; p.with_watch_monetization_types = 'flatrate'; }
+      const data = await tmdb(`discover/${d.type}`, p);
+      if (d.page >= data.total_pages || d.page >= 500) d.end = true;
+      for (const r of data.results || []) {
+        const it = norm(r, d.type);
+        if (!it || d.seen.has(it.key)) continue;
+        d.seen.add(it.key); reg(it);
+        if (!hidden(it.key)) { d.items.push(it.key); added++; }
+      }
+    }
+  } catch (e) { toast(e.message); }
+  d.loading = false; refreshView();
+}
+
+const opt = (v, l, cur) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`;
+const halfChk = () => `<label class="chk"><input type="checkbox" data-filter="half" ${S.disc.half ? 'checked' : ''}> Include titles only one of us has seen</label>`;
+
+function discoverView() {
+  const d = S.disc;
+  const gl = S.genres[d.type] || [], pl = S.provs[d.type] || [];
+  let items;
+  if (d.wish) items = [...S.titles.keys()].filter(isMust).map((k) => S.items.get(k));
+  else items = d.items.map((k) => S.items.get(k)).filter((it) => it && !hidden(it.key));
+  const seg = (v, l) => `<button class="${d.type === v ? 'on' : ''}" data-act="type" data-v="${v}">${l}</button>`;
+  return `<div class="filters">
+    <div class="seg">${seg('movie', 'Movies')}${seg('tv', 'Series')}</div>
+    <select data-filter="genre"><option value="">All genres</option>${gl.map((g) => opt(g.id, g.name, d.genre)).join('')}</select>
+    <select data-filter="minr">${opt('', 'Any rating', d.minr)}${opt('6', '6+ ★', d.minr)}${opt('7', '7+ ★', d.minr)}${opt('8', '8+ ★', d.minr)}</select>
+    <select data-filter="sort">${opt('popularity', 'Most popular', d.sort)}${opt('rating', 'Best rated', d.sort)}${opt('new', 'Newest', d.sort)}</select>
+    <select data-filter="prov"><option value="">Any service</option>${pl.map((p) => opt(p.provider_id, p.provider_name, d.prov)).join('')}</select>
+    <label class="chk"><input type="checkbox" data-filter="wish" ${d.wish ? 'checked' : ''}> Must watch</label>
+    ${d.wish ? '' : halfChk()}
+  </div>
+  <p class="hint">${d.wish ? 'Your shared must-watch list: new picks and rewatches.' : d.half ? 'Titles not yet seen by both of you. Streaming: Austria (flatrate).' : 'Titles neither of you has seen. Streaming: Austria (flatrate).'}</p>
+  <div class="grid">${items.map((it) => card(it)).join('')}</div>
+  ${d.wish ? (items.length ? '' : empty('Nothing on your must-watch list', 'Tap ♡ on a title you want to see — or ↻ on one you have seen to watch it again together.'))
+    : d.loading ? spinner
+    : !items.length ? empty('Nothing here', 'Try different filters.')
+    : d.end ? '' : '<button class="btn more" data-act="more">Load more</button>'}`;
+}
+
+/* ---------- Search ---------- */
+const searchView = () => `<input id="q" class="search" type="search" placeholder="Search movies & series…" value="${esc(S.q)}" autocomplete="off"><div id="results"></div>`;
+
+function paintResults() {
+  const el = $('#results'); if (!el) return;
+  if (!S.q.trim()) el.innerHTML = empty('Search anything', 'Log old favorites too: tap ✓ on anything you have already seen, rate it, and flag ↻ to watch it again together. Ratings also sharpen your picks.');
+  else if (S.searching) el.innerHTML = spinner;
+  else if (!S.results.length) el.innerHTML = empty('No results', 'Try another title.');
+  else el.innerHTML = `<div class="grid">${S.results.map((k) => card(S.items.get(k))).join('')}</div>`;
+}
+
+let searchTimer;
+async function doSearch() {
+  const q = S.q.trim(); const token = ++S.searchToken;
+  if (!q) { S.results = []; S.searching = false; paintResults(); return; }
+  S.searching = true; paintResults();
+  try {
+    const data = await tmdb('search/multi', { query: q, page: 1 });
+    if (token !== S.searchToken) return;
+    S.results = (data.results || []).map((r) => norm(r)).filter(Boolean).map((it) => { reg(it); return it.key; });
+  } catch (e) { toast(e.message); S.results = []; }
+  S.searching = false; paintResults();
+}
+
+/* ---------- Picks (recommendations for both) ---------- */
+function affinity(userId) {
+  const g = {};
+  S.titles.forEach((t) => {
+    const r = t.ratings?.[userId]?.rating; if (!r) return;
+    (t.genres || []).forEach((id) => { (g[id] ||= { s: 0, n: 0 }); g[id].s += (r - 6.5) / 3.5; g[id].n++; });
+  });
+  return (genres) => {
+    const v = (genres || []).filter((id) => g[id]).map((id) => Math.max(-1, Math.min(1, g[id].s / g[id].n)));
+    return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0;
+  };
+}
+
+function seedsFor(userId) {
+  return [...S.titles.entries()]
+    .filter(([, t]) => (t.ratings?.[userId]?.rating || 0) >= 7)
+    .map(([k, t]) => ({ key: k, type: t.type, tmdbId: t.tmdbId, title: t.title, r: t.ratings[userId].rating, at: t.ratings[userId].at || 0 }))
+    .sort((a, b) => b.r - a.r || b.at - a.at).slice(0, 8);
+}
+
+const anyLow = (key) => Object.values(S.titles.get(key)?.ratings || {}).some((r) => r.rating && r.rating <= 5);
+
+async function ensurePicks(force) {
+  const uids = S.room.members;
+  const seeds = Object.fromEntries(uids.map((u) => [u, seedsFor(u)]));
+  const sig = JSON.stringify([S.disc.half, uids.map((u) => seeds[u].map((s) => s.key + ':' + s.r))]);
+  if (!force && S.picks?.sig === sig) return;
+  S.picks = { sig, loading: true, list: [] };
+  refreshView();
+  const all = new Map();
+  uids.forEach((u) => seeds[u].forEach((s) => all.set(s.key, s)));
+  if (!all.size) { S.picks = { sig, empty: true, list: [] }; refreshView(); return; }
+  const lists = new Map();
+  await Promise.all([...all.values()].map(async (s) => {
+    try { lists.set(s.key, (await tmdb(`${s.type}/${s.tmdbId}/recommendations`)).results || []); }
+    catch (e) { lists.set(s.key, []); }
+  }));
+  const aff = Object.fromEntries(uids.map((u) => [u, affinity(u)]));
+  const cand = new Map();
+  uids.forEach((u) => seeds[u].forEach((s) => {
+    (lists.get(s.key) || []).forEach((raw, idx) => {
+      const it = norm(raw, s.type);
+      if (!it || hidden(it.key) || anyLow(it.key) || it.votes < 50 || it.vote < 5.5) return;
+      const c = cand.get(it.key) || { it, score: {}, via: {} };
+      c.score[u] = (c.score[u] || 0) + ((s.r - 5) / 5) * (1 - idx * 0.02);
+      (c.via[u] ||= []).push(s.title);
+      cand.set(it.key, c);
+    });
+  }));
+  const list = [...cand.values()].map((c) => {
+    const v = uids.map((u) => c.score[u] || 0);
+    const a = uids.reduce((sum, u) => sum + aff[u](c.it.genres), 0);
+    c.total = 2 * Math.min(...v) + 0.6 * v.reduce((x, y) => x + y, 0) + 0.6 * a + 0.04 * c.it.vote;
+    c.both = uids.length > 1 && v.every((x) => x > 0);
+    reg(c.it); return c;
+  }).sort((x, y) => y.total - x.total).slice(0, 40);
+  S.picks = { sig, list };
+  refreshView();
+}
+
+function picksView() {
+  const p = S.picks;
+  if (!p || p.loading) return spinner;
+  if (p.empty) return empty('Rate a few titles first', 'Mark titles you have seen and give them a 7 or higher — new ones or old favorites. The more you both rate, the better the picks get.');
+  const f = (v, l) => `<button class="${S.picksType === v ? 'on' : ''}" data-act="ptype" data-v="${v}">${l}</button>`;
+  const list = p.list.filter((c) => S.picksType === 'all' || c.it.type === S.picksType);
+  const solo = S.room.members.length < 2;
+  const uids = S.room.members;
+  return `<div class="filters"><div class="seg">${f('all', 'All')}${f('movie', 'Movies')}${f('tv', 'Series')}</div>${halfChk()}<button class="btn ghost small" data-act="refreshpicks">Refresh</button></div>
+  <p class="hint">${solo ? 'Based on your ratings. Picks get better once your partner joins and rates too.' : 'Ranked by what you both like — titles liked by both come first.'}</p>
+  <div class="grid">${list.map((c) => {
+    const why = uids.filter((u) => c.via[u]).map((u) => `${u === uid() ? 'You' : esc(nameOf(u))}: ${esc(c.via[u][0])}`).join(' · ');
+    return card(c.it, `${c.both ? '<span class="tag">Matches both</span>' : ''}<p class="why">${why}</p>`);
+  }).join('')}</div>
+  ${list.length ? '' : empty('No picks for this filter', 'Try another filter or rate more titles.')}`;
+}
+
+/* ---------- Shelf ---------- */
+function shelfView() {
+  const pu = partnerUid();
+  const f = [['all', 'All'], ['both', 'Seen by both'], ['me', 'Only me'], ['partner', 'Only ' + (pu ? nameOf(pu) : 'partner')], ['must', 'Must watch']];
+  const lastAt = (k) => {
+    const t = S.titles.get(k);
+    return Math.max(...Object.values(t.ratings || {}).map((r) => r.at || 0), ...(t.comments || []).map((c) => c.at || 0), 0);
+  };
+  const keys = [...S.titles.keys()].filter((k) => {
+    const m = mine(k), t = theirs(k), tt = S.titles.get(k);
+    if (!m.seen && !t.seen && !isMust(k) && !(tt.comments || []).length) return false;
+    switch (S.shelfFilter) {
+      case 'both': return m.seen && t.seen;
+      case 'me': return m.seen && !t.seen;
+      case 'partner': return t.seen && !m.seen;
+      case 'must': return isMust(k);
+      default: return true;
+    }
+  }).sort((a, b) => lastAt(b) - lastAt(a));
+  return `<div class="filters"><select data-filter="shelf">${f.map(([v, l]) => opt(v, l, S.shelfFilter)).join('')}</select>
+    <button class="btn ghost small" data-act="addpast">+ Add titles you've already seen</button></div>
+  <div class="grid">${keys.map((k) => card(S.items.get(k))).join('')}</div>
+  ${keys.length ? '' : empty('Your shelf is empty', 'Titles you mark as seen, rate, or put on your must-watch list show up here.')}`;
+}
+
+/* ---------- Modal ---------- */
+async function openTitle(key) {
+  S.modal = key; renderModal();
+  const it = S.items.get(key);
+  if (it && !S.detail[key]) {
+    try {
+      S.detail[key] = await tmdb(`${it.type}/${it.tmdbId}`, { append_to_response: 'watch/providers' });
+      if (S.modal === key) renderModal();
+    } catch (e) { /* details are optional */ }
+  }
+}
+
+function renderModal() {
+  const el = $('#modal');
+  if (!S.modal || S.screen !== 'main') { el.className = ''; el.innerHTML = ''; lastModal = null; return; }
+  el.className = 'open';
+  const prev = $('.sheet', el);
+  const scroll = prev?.scrollTop || 0;
+  // keep typed text (comment draft, name field) across live re-renders of the same sheet
+  const vals = {}, ae = document.activeElement;
+  let focus = null;
+  if (prev && lastModal === S.modal) {
+    prev.querySelectorAll('input[id]').forEach((i) => { if (i.type === 'text' || i.type === 'search') vals[i.id] = i.value; });
+    if (ae && prev.contains(ae) && ae.id) focus = { id: ae.id, s: ae.selectionStart };
+  }
+  lastModal = S.modal;
+  el.innerHTML = `<div class="sheet"><button class="close" data-act="close" aria-label="Close">✕</button>${S.modal === 'settings' ? settingsModal() : titleModal(S.modal)}</div>`;
+  const sheet = $('.sheet', el);
+  sheet.scrollTop = scroll;
+  Object.entries(vals).forEach(([id, v]) => { const n = document.getElementById(id); if (n) n.value = v; });
+  if (focus) { const n = document.getElementById(focus.id); if (n) { n.focus(); try { n.setSelectionRange(focus.s, focus.s); } catch (e) {} } }
+}
+
+function settingsModal() {
+  const pu = partnerUid(), pn = pu ? nameOf(pu) : 'Your partner';
+  const theme = localStorage.getItem('cft-theme') || 'auto';
+  const seg = (v, l) => `<button class="${theme === v ? 'on' : ''}" data-act="theme" data-v="${v}">${l}</button>`;
+  const P = S.prefs, on = S.pushOn;
+  const sw = (k, label) => `<label class="srow sub"><span>${label}</span><input type="checkbox" class="sw" data-pref="${k}" ${P[k] ? 'checked' : ''} ${on ? '' : 'disabled'}></label>`;
+  let note = '';
+  if (!S.pushSupported) note = "This browser doesn't support push notifications.";
+  else if ('Notification' in window && Notification.permission === 'denied') note = 'Notifications are blocked for this site in your browser settings.';
+  else if (!pushConfigured()) note = 'Push is not configured yet (add the VAPID key in firebase-config.js).';
+  return `<h2 style="margin-bottom:2px">Settings</h2>
+    <p class="meta">${esc(nameOf(uid()))}${pu ? ' &amp; ' + esc(nameOf(pu)) : ''}</p>
+
+    <div class="sec">Appearance</div>
+    <div class="seg">${seg('auto', 'Auto')}${seg('light', 'Light')}${seg('dark', 'Dark')}</div>
+
+    <div class="sec">Notifications on this device</div>
+    <label class="srow"><span><b>Push notifications</b></span><input type="checkbox" class="sw" data-push ${on ? 'checked' : ''} ${S.pushSupported && pushConfigured() ? '' : 'disabled'}></label>
+    ${note ? `<p class="meta" style="margin-top:6px">${esc(note)}</p>` : ''}
+    <p class="meta" style="margin:8px 0 2px">Tell me when…</p>
+    ${sw('rated', `${esc(pn)} rates or logs a title`)}
+    <label class="srow sub"><span>…but only for ratings of</span><select data-pref="minRating" ${on && P.rated ? '' : 'disabled'}>${opt(0, 'Any rating', P.minRating)}${opt(7, '7 or higher', P.minRating)}${opt(8, '8 or higher', P.minRating)}${opt(9, '9 or higher', P.minRating)}</select></label>
+    ${sw('must', `${esc(pn)} adds something to the must-watch list`)}
+    ${sw('comment', `${esc(pn)} leaves a comment`)}
+    ${sw('joined', `${esc(pn)} joins the room`)}
+
+    <div class="sec">Your name</div>
+    <form id="nameForm" class="nform"><input id="nameInput" class="field" type="text" maxlength="24" value="${esc(nameOf(uid()))}" autocomplete="off"><button class="btn" type="submit">Save</button></form>
+
+    ${S.installEvt ? `<div class="sec">App</div><button class="btn ghost" data-act="install" style="width:100%">Install ${esc(APP_NAME)}</button>` : ''}
+
+    <div class="sec">Room code</div><div class="code">${esc(S.roomId)}</div>
+    <div class="row"><button class="btn" data-act="copy">Copy invite link</button><button class="btn ghost" data-act="logout">Sign out</button></div>
+    <p class="jw" style="margin-top:14px">Movie &amp; series data from TMDB. Streaming availability from JustWatch.</p>`;
+}
+
+function titleModal(key) {
+  const it = S.items.get(key); if (!it) return '';
+  const det = S.detail[key], m = mine(key), t = theirs(key), pu = partnerUid();
+  const genres = (det?.genres || []).map((g) => g.name);
+  const prov = det?.['watch/providers']?.results?.AT;
+  const flat = (prov?.flatrate || []).map((p) => p.provider_name);
+  let len = '';
+  if (det) {
+    if (it.type === 'movie' && det.runtime) len = `${Math.floor(det.runtime / 60)}h ${det.runtime % 60}m`;
+    if (it.type === 'tv' && det.number_of_seasons) len = `${det.number_of_seasons} season${det.number_of_seasons > 1 ? 's' : ''}`;
+  }
+  const pn = pu ? esc(nameOf(pu)) : '';
+  const theirLine = !pu ? 'Invite your partner to see their ratings here.'
+    : t.seen ? `${pn} has seen it${t.rating ? ` · ${t.rating}/10` : ''}${t.again ? ' · would watch again ↻' : ''}`
+    : t.want ? `${pn} wants to watch it` : `${pn} hasn't seen it`;
+  const comments = (S.titles.get(key)?.comments || []).slice().sort((a, b) => a.at - b.at);
+  const heart = m.seen
+    ? `<button class="btn ${m.again ? 'on' : 'ghost'}" data-act="want" data-key="${key}">${m.again ? '↻ Watch again: yes' : '↻ Watch again together'}</button>`
+    : `<button class="btn ${m.want ? 'on' : 'ghost'}" data-act="want" data-key="${key}">${m.want ? '♡ On must-watch list' : '♡ Want to watch'}</button>`;
+  return `<div class="mhead">${it.poster ? `<img alt="" src="${posterUrl(it.poster)}">` : `<div class="noposter">${esc(it.title)}</div>`}
+    <div><h2>${esc(it.title)}</h2>
+    <div class="meta">${[it.year, it.type === 'tv' ? 'Series' : 'Movie', len, it.vote ? '★ ' + it.vote : ''].filter(Boolean).map(esc).join(' · ')}</div>
+    <div class="chips" style="margin-top:8px">${genres.map((g) => `<span class="chip">${esc(g)}</span>`).join('')}</div></div></div>
+    ${(det?.overview || it.overview) ? `<p class="over">${esc(det?.overview || it.overview)}</p>` : ''}
+    <div class="sec">Your rating</div>
+    <div class="rates">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<button class="rate ${m.rating === n ? 'on' : ''} ${n >= 7 ? 'hi' : ''}" data-act="rate" data-key="${key}" data-n="${n}">${n}</button>`).join('')}</div>
+    <div class="row"><button class="btn ${m.seen ? 'on' : 'ghost'}" data-act="seen" data-key="${key}">${m.seen ? '✓ Seen' : 'I\'ve seen it'}</button>${heart}</div>
+    <div class="partner">${theirLine}</div>
+    <div class="sec">Comments</div>
+    ${comments.length ? comments.map((c) => `<div class="cm ${c.uid === uid() ? 'mine' : ''}"><b>${c.uid === uid() ? 'You' : esc(nameOf(c.uid))}</b> <span class="meta">${ago(c.at)}</span><p>${esc(c.text)}</p></div>`).join('') : '<p class="meta">No comments yet.</p>'}
+    <form id="commentForm" class="cform" data-key="${key}"><input id="commentText" class="field" type="text" maxlength="300" placeholder="${pu ? 'Leave a note for ' + pn + '…' : 'Add a note…'}" autocomplete="off"><button class="btn" type="submit">Send</button></form>
+    <div class="sec">Streaming in Austria</div>
+    ${det ? (flat.length ? `<div class="chips">${flat.map((n) => `<span class="chip">${esc(n)}</span>`).join('')}</div>` : '<p class="meta">Not included in a subscription right now.</p>') : '<p class="meta">Loading…</p>'}
+    <p class="jw">Streaming data by JustWatch · Movie data by TMDB</p>`;
+}
+
+/* ---------- events ---------- */
+async function goTab(tab) {
+  S.tab = tab; paintChrome();
+  if (tab === 'search') $('#view').innerHTML = searchView();
+  refreshView();
+  if (tab === 'discover' && !S.disc.items.length && !S.disc.wish) { await loadMeta(); loadDiscover(true); }
+  if (tab === 'picks') ensurePicks();
+  if (tab === 'search') $('#q')?.focus();
+  window.scrollTo(0, 0);
+}
+
+document.addEventListener('click', async (e) => {
+  const el = e.target.closest('[data-act]');
+  if (e.target.id === 'modal') { S.modal = null; renderModal(); return; }
+  if (!el) return;
+  const { act, key, tab, v, n } = el.dataset;
+  const item = key ? S.items.get(key) : null;
+  switch (act) {
+    case 'login': login(); break;
+    case 'logout': S.modal = null; await signOut(auth); break;
+    case 'create': createRoom(); break;
+    case 'copy':
+      try { await navigator.clipboard.writeText(inviteLink()); toast('Invite link copied'); }
+      catch { toast('Room code: ' + S.roomId); }
+      break;
+    case 'opensettings': S.modal = 'settings'; renderModal(); break;
+    case 'close': S.modal = null; renderModal(); break;
+    case 'theme': localStorage.setItem('cft-theme', v); applyTheme(); renderModal(); break;
+    case 'install':
+      if (S.installEvt) {
+        S.installEvt.prompt();
+        try { await S.installEvt.userChoice; } catch (err) {}
+        S.installEvt = null; paintInstall(); if (S.modal === 'settings') renderModal();
+      }
+      break;
+    case 'dismissinstall': localStorage.setItem('cft-install-dismissed', String(Date.now())); paintInstall(); break;
+    case 'tab': goTab(tab); break;
+    case 'addpast': goTab('search'); break;
+    case 'open': openTitle(key); break;
+    case 'seen': if (item) { const m = mine(key); setMine(item, { seen: !m.seen }); } break;
+    case 'want': if (item) { const m = mine(key); setMine(item, m.seen ? { again: !m.again } : { want: !m.want }); } break;
+    case 'rate': if (item) { const m = mine(key); setMine(item, { rating: m.rating === +n ? null : +n, seen: true }); } break;
+    case 'more': loadDiscover(false); break;
+    case 'type':
+      if (S.disc.type !== v) { Object.assign(S.disc, { type: v, genre: '', prov: '' }); await loadMeta(); loadDiscover(true); }
+      break;
+    case 'ptype': S.picksType = v; refreshView(); break;
+    case 'refreshpicks': apiCache.clear(); ensurePicks(true); break;
+  }
+});
+
+document.addEventListener('change', async (e) => {
+  const t = e.target;
+  // notification master switch
+  if (t.dataset?.push !== undefined) {
+    try { if (t.checked) await enablePush(); else await disablePush(); }
+    catch (err) { toast(err.message); }
+    renderModal(); return;
+  }
+  // notification preferences
+  const pref = t.dataset?.pref;
+  if (pref) {
+    const val = t.type === 'checkbox' ? t.checked : Number(t.value);
+    S.prefs[pref] = val;
+    setDoc(doc(db, 'users', uid()), { notif: { [pref]: val } }, { merge: true }).catch((err) => toast(err.message));
+    renderModal(); return;
+  }
+  const f = t.dataset?.filter; if (!f) return;
+  const val = t.type === 'checkbox' ? t.checked : t.value;
+  if (f === 'shelf') { S.shelfFilter = val; refreshView(); return; }
+  S.disc[f] = val;
+  if (f === 'wish') { refreshView(); if (!val && !S.disc.items.length) loadDiscover(true); return; }
+  if (f === 'half' && S.tab === 'picks') { ensurePicks(true); return; }
+  loadDiscover(true);
+});
+
+document.addEventListener('input', (e) => {
+  if (e.target.id !== 'q') return;
+  S.q = e.target.value; clearTimeout(searchTimer); searchTimer = setTimeout(doSearch, 350);
+});
+
+document.addEventListener('submit', async (e) => {
+  const id = e.target.id;
+  if (id === 'joinForm') { e.preventDefault(); joinRoom($('#joinCode').value); }
+  else if (id === 'commentForm') {
+    e.preventDefault();
+    const inp = $('#commentText'); const text = inp.value; inp.value = '';
+    addComment(e.target.dataset.key, text);
+  } else if (id === 'nameForm') {
+    e.preventDefault();
+    const name = $('#nameInput').value.trim().slice(0, 24);
+    if (!name) return;
+    try { await updateDoc(doc(db, 'rooms', S.roomId), { ['memberNames.' + uid()]: name }); toast('Name saved'); }
+    catch (err) { toast(err.message); }
+  }
+});
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.modal) { S.modal = null; renderModal(); } });
+
+render();
 </script>
 </body>
 </html>
